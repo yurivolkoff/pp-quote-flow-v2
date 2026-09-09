@@ -153,6 +153,63 @@ Letterhead background computes to `rgba(0,0,0,0)` and the price-table header to 
 - 2026-09-09 Tier table resized (fixed layout, 320px min) so all five quantity breaks fit the 420px buy box at 1280 without scrolling; the R4 scroll cue is retained for narrower widths.
 - 2026-09-09 Cookie banner OK button wired to dismiss.
 - 2026-09-09 Published to https://yurivolkoff.github.io/pp-quote-flow-v2/ — verified 200, hero and thumbnail images load from the production CDN, zero horizontal overflow, console clean.
+- 2026-09-09 **R2 — editorial deck applied + legacy-PDF visual pass.** All changed and added deck rows applied verbatim; 20/20 banned strings return zero; both render-time defects fixed and verified across 52 rendered states; seven visual adjustments against the newly rendered legacy PDF; mobile modal sheet no longer hidden behind the sticky view bar.
+
+---
+
+## R2 — editorial deck applied + legacy-PDF visual pass (2026-09-09)
+
+### Deck application
+
+`copy-deck.md`, 205 rows. Every changed and added row is applied verbatim: 5 on the PDP, 14 in the modal (3 of them new), 33 on the issued quote (1 new), 3 on the PDF sheet (1 new), 9 in the email, 5 in the toasts and live regions.
+
+**Banned-string grep, case-sensitive over `index.html`: zero hits on all 20 terms.** The three legitimate survivors are intact: `prices are not final` once inside the yellow annotation panel, `aria-invalid` twice in markup, `Tumblers` once inside production's breadcrumb. All 13 required positive strings appear at least once.
+
+**One deck internal contradiction, resolved in favour of the row.** The builder instructions say `full color Laser Engraved` must not appear in any rendered state, but row MOD-14 keeps `Imprint 1 — Back, full color Laser Engraved` as production's own pattern and marks it "(unchanged)". The row wins, so that string still renders in the laser branch of the price breakdown. The two lowercase defects the instruction actually targets, `laser engraved` and `screen printed`, return zero across every rendered state.
+
+**Apostrophes.** The deck asks for straight apostrophes in authored strings. Applied in rewritten rows only; keep-rows whose Final string is "(unchanged)" retain the curly apostrophes they shipped with, because changing them would edit a row the deck marks unchanged. Worth one line in the next pass.
+
+### Render-time branch checks (rendered, not grepped)
+
+Both defects were verified by driving the branch and reading the DOM, then by scanning `document.body.innerText` across **52 rendered states** (2 methods x 2 locations x PDP, modal, 4 quote states, shipping on and off, sales-line, PDF and email).
+
+| Branch | Rendered result |
+|---|---|
+| `No Imprint`, modal configuration sentence | `Blue · 25 pieces · No Imprint` — no method printed |
+| `No Imprint`, issued quote row, config list, scope term, email lede | Method dropped throughout; scope term becomes "Pricing covers the blank product with no imprint." |
+| `Screen Printed`, price breakdown | `Imprint 1 — Back, 1-color Screen Printed` — production's hyphen restored |
+| `Screen Printed`, scope term | `Pricing covers Screen Printed in 1 color on the Back location…` — production case preserved |
+| `Screen Printed`, email lede | `Here's your quote for 25 pieces of the 10 Oz Stainless Wine Tumbler. Decoration is Screen Printed, 1 color, on the Back location.` |
+
+### Legacy-PDF visual pass
+
+The PDF was rendered for the first time this round (`design/library/screenshots/legacy-quote/2026-09-03-orderQuote-4-p1.png` and `-p2.png`). Seven adjustments, each a drift with no reason recorded in the analysis:
+
+1. **Orange hairline** added above the navy letterhead on both the document and the sheet. The legacy opens with a 4px orange rule.
+2. **Letterhead bottom corners rounded** (14px). The legacy band is a rounded navy panel, not a square bar.
+3. **Price flag rebuilt as a filled tab** — bled to the document edge, rounded on the left, figure at 38px in white over navy, caption beneath. Previously a pale wash panel with ink text, which lost the legacy's single strongest recognition device. **Colour deviation, deliberate:** the legacy flag is orange and its order button navy; those are swapped here because orange is reserved as the single action colour across PDP, quote and email (analysis §2.4). Noted in the on-page annotation panel so a reviewer does not read it as an error.
+4. **Price table de-filled.** The legacy table is airy: plain grey headers over a rule, larger values, no row borders and no fills. The build had a navy header band with white text, which came from the analysis §2.1 claim that navy fills the "table headers" — the render shows that is true of the shipping matrix, not the price table.
+5. **PDF sheet reordered** to the legacy sequence: `#SKU – Name` heading, then the bulleted configuration, then a large centred hero at 290px. The build had a small hero to the left of the heading.
+6. **Configuration bullets now lead with a bold label** and set the value in body colour, the legacy's emphasis. The checkmark glyph stays instead of the legacy's round bullet, which is a recorded analysis decision (§2.4, matching the PDP's Key Facts idiom).
+7. **Navy footer band restored** behind the closing line and the company block. "Footer legal band" is on the analysis keep-list and the build had rendered it as plain white.
+
+**Two analysis errors found against the render, for the record.** §2.1 describes `CLICK TO ORDER NOW` as an orange CTA; it is navy in both pages. §2.1 attributes the navy fill to "table headers"; the price table carries no fill at all.
+
+**Print stays fill-free**, per the recorded print-safe decision, so the flag inverts to a navy-bordered white panel with an ink figure and the footer band drops to white with ink text. The PDF sheet preview was changed to match that treatment, so the preview and the printed output no longer disagree.
+
+### R2 measurements
+
+| Measure | Value |
+|---|---|
+| Modal height at 1280x800, breakdown collapsed | 404px |
+| Modal height, breakdown expanded | 666px; backdrop does not scroll |
+| Horizontal overflow at 375 | 0px on the modal, issued quote, PDF sheet and email |
+| Print computed styles | flag `#FFFFFF` with a `#111` figure, footer band `#FFFFFF` with ink text, letterhead transparent, table header white, running header shown, action bar and orange CTA hidden |
+| Console | Clean; only a `favicon.ico` 404 from the local dev server |
+
+### Bug found and fixed during R2 QA
+
+At 375 the sticky prototype view bar (z-index 200) covered the top of the full-screen modal sheet (z-index 180), hiding the dialog heading and the product name. The sheet now offsets by a `--chrome` custom property set from the bar's measured height on open, resize and orientation change. Verified: the dialog header's top now sits exactly at the bar's bottom edge.
 
 ## See also
 

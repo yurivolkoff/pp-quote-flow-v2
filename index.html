@@ -29,10 +29,10 @@
    Legacy PDF navy #0F2145 is retinted to production's #001542 (analysis §2.4).
    ============================================================ */
 :root{
-  --orange:#FE5000; --orange-hover:#E04700; --wash:#FFF6F2;
+  --orange:#FE5000; --orange-hover:#E04700; --orange-deep:#C24000; --wash:#FFF6F2;
   --navy:#001542; --navy-2:#0A2560;
   --ink:#1F1F1F; --body:#525252; --helper:#6C6C6C;
-  --rule:#EEEEEE; --rule-strong:#D4D4D4; --input-border:#CDCDCD;
+  --rule:#EEEEEE; --rule-strong:#949494; --input-border:#949494;
   --error-text:#D70000;
   --amber-ink:#7A4A00; --amber-bg:#FFF6E5; --amber-rule:#E8C88A;
   --green-ink:#12653A; --green-bg:#ECFDF3; --green-rule:#A7E3C4;
@@ -196,7 +196,7 @@ body.show-ann .ann-list{display:block}
 .stepbar .lab{font-size:14px;font-weight:700}
 .stepbar .tick{margin-left:auto;font-size:13px}
 .swatches{display:flex;gap:10px;flex-wrap:wrap}
-.swatch{width:36px;height:36px;border-radius:50%;padding:2px;background:none;border:0;box-shadow:0 0 0 1px var(--rule)}
+.swatch{width:44px;height:44px;border-radius:50%;padding:2px;background:none;border:0;box-shadow:0 0 0 1px var(--rule)}
 .swatch span{display:block;width:100%;height:100%;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
 .swatch.on{box-shadow:0 0 0 1px #fff, 0 0 0 3px var(--orange)}
 .colorinfo{font-size:13px;color:var(--body);margin:10px 0 20px}
@@ -272,7 +272,7 @@ body.show-ann .ann-list{display:block}
 .cfg-rows{margin-top:12px;border-top:1px solid var(--rule)}
 .cfg-rows dt,.cfg-rows dd{margin:0}
 .cfg-rows .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
-  padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px}
+  padding:7px 0;border-bottom:1px solid var(--rule);font-size:15px}
 .cfg-rows .r .k{color:var(--body);flex:none}
 .cfg-rows .r .v{color:var(--ink);font-weight:700;text-align:right;min-width:0}
 /* R3 item 3 / 17 — two targeted change links, one per configurator zone. */
@@ -332,8 +332,8 @@ body.show-ann .ann-list{display:block}
 .mform input[aria-invalid=true]{border-color:var(--error-text)}
 .err{font-size:12.5px;color:var(--error-text);margin-top:5px;display:block}
 .privacy{font-size:12px;color:var(--helper);margin-top:12px;line-height:1.45}
-.mcta{width:100%;height:50px;border:0;border-radius:4px;background:var(--orange);color:#fff;font-size:17px;font-weight:700;margin-top:14px}
-.mcta:hover{background:var(--orange-hover)}
+.mcta{width:100%;height:50px;border:0;border-radius:4px;background:var(--orange-deep);color:#fff;font-size:17px;font-weight:700;margin-top:14px}
+.mcta:hover{background:#A83700}
 .mcta[disabled]{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
 .reason{font-size:12.5px;color:var(--helper);margin-top:7px;line-height:1.45}
 .spec-block{border:1px solid var(--rule-strong);border-radius:4px;padding:14px;margin-top:2px}

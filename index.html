@@ -1,0 +1,1715 @@
+<!-- Design library: design/library/promotionpros-pdp.md (2026-09-09) + legacy quote _sources/pp-quotes/2026-09-03-orderQuote-4-rep-issued.pdf -->
+<!--
+  PromotionPros — Instant Quote v2 prototype
+  Phase 2 (UI design) of docs/2026-09-09-instant-quote-v2-design-plan.md
+  Spec: research/reports/2026-09-09-quote-v2-ux-analysis.md  (§7 = build checklist)
+  Copy: placeholder-grade, reused from design/prototypes/2026-09-03-quote-flow/spec.md
+        (deck IDs in force) — Phase 3 owns the editorial pass.
+
+  Five views: 1 PDP (production-faithful) · 2 Quote modal · 3 Issued quote (web)
+  · 4 PDF sheet + real @media print · 5 Email.
+
+  Recognition of the legacy quote PDF lives in five devices only — navy
+  letterhead, "#SKU - Name" heading with hero, checkmark-bulleted configuration,
+  the price table, and the single orange action. Everything between them
+  follows the production PDP system (Lato, 16px/1.5, whitespace, 4px radius).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PromotionPros — Instant Quote v2 prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — design/library/promotionpros-pdp.md
+   Legacy PDF navy #0F2145 is retinted to production's #001542 (analysis §2.4).
+   ============================================================ */
+:root{
+  --orange:#FE5000; --orange-hover:#E04700; --wash:#FFF6F2;
+  --navy:#001542; --navy-2:#0A2560;
+  --ink:#1F1F1F; --body:#525252; --helper:#6C6C6C;
+  --rule:#EEEEEE; --rule-strong:#D4D4D4; --input-border:#CDCDCD;
+  --error-text:#D70000;
+  --amber-ink:#7A4A00; --amber-bg:#FFF6E5; --amber-rule:#E8C88A;
+  --green-ink:#12653A; --green-bg:#ECFDF3; --green-rule:#A7E3C4;
+  --info-ink:#0B4A8F; --info-bg:#EFF6FF; --info-rule:#B9D6F5;
+  --gray-bg:#F5F5F5; --gray-ink:#4A4A4A;
+  --disabled-bg:#DCDCDC; --disabled-text:#6C6C6C;
+  --page:#F2F3F5;
+  --font:'Lato',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);font-size:16px;line-height:1.5;color:var(--body);background:var(--page)}
+h1,h2,h3,h4,h5,p,ul,ol,figure,table,dl,dd{margin:0}
+ul{padding:0;list-style:none}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--navy)}
+img{max-width:100%}
+[hidden]{display:none !important}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms !important;animation-duration:.01ms !important}}
+
+/* ============================================================
+   PROTOTYPE CHROME  (mechanics carried from the R6 prototype)
+   ============================================================ */
+.proto-bar{position:sticky;top:0;z-index:200;background:#14181D;color:#B9C0C9;font-size:13px;
+  display:flex;align-items:center;gap:6px;padding:8px 16px;flex-wrap:wrap}
+.proto-bar b{color:#fff;font-weight:700;margin-right:8px}
+.proto-tab{background:none;border:1px solid #3A414B;color:#B9C0C9;padding:5px 11px;font-size:13px;border-radius:3px}
+.proto-tab:hover{border-color:#6B7480;color:#E8EBEF}
+.proto-tab.on{background:#fff;color:#14181D;border-color:#fff;font-weight:700}
+.proto-sep{width:1px;height:20px;background:#3A414B;margin:0 6px}
+.proto-note{margin-left:auto;color:#7B8494;font-size:12px}
+.proto-toggle{background:none;border:1px solid #3A414B;color:#B9C0C9;padding:5px 11px;font-size:13px;border-radius:3px}
+.proto-toggle.on{border-color:#FFB12E;color:#FFB12E}
+.proto-help{background:#EDEFF2;border-bottom:1px solid #DDE1E6;color:#3C444E;font-size:13px;padding:9px 16px;line-height:1.45}
+.proto-help b{color:#14181D}
+.view{display:none}
+.view.on{display:block}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+.wrap-narrow{max-width:768px;margin:0 auto;padding:0 24px}
+.chipdeck{padding:14px 0 4px}
+.state-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:4px 0}
+.state-chips .lbl{font-size:13px;color:var(--helper);font-weight:700;min-width:104px}
+.chip{border:1px solid var(--rule-strong);background:#fff;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--body)}
+.chip:hover{border-color:var(--navy)}
+.chip.on{border-color:var(--navy);background:var(--navy);color:#fff;font-weight:700}
+.ann-list{display:none;background:#FFF7E0;border:1px solid #FFB12E;border-radius:6px;padding:14px 16px;
+  margin:14px 0 20px;font-size:13.5px;color:#3D3323}
+body.show-ann .ann-list{display:block}
+.ann-list b{color:#8A5B00}
+.ann-list li{margin:5px 0 5px 20px;list-style:disc;line-height:1.55}
+.ann-list .hd{display:block;margin-bottom:6px;color:#14181D;font-weight:700;font-size:14px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:32px;background:#14181D;color:#fff;font-size:15px;
+  padding:13px 20px;border-radius:4px;z-index:300;display:none;max-width:calc(100% - 32px);text-align:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.toast.on{display:block}
+
+/* ============================================================
+   VIEW 1 — PRODUCTION PDP  (site chrome)
+   ============================================================ */
+.site{background:#fff}
+.util{background:var(--navy);color:#fff;font-size:12px}
+.util .wrap{display:flex;align-items:center;gap:14px;padding-top:7px;padding-bottom:7px;flex-wrap:wrap}
+.util a{color:#fff;text-decoration:none}
+.util .star{color:#FFB12E}
+.util .right{margin-left:auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.util .tel{color:var(--orange);font-weight:700}
+.head-main .wrap{display:flex;align-items:center;gap:20px;padding-top:14px;padding-bottom:14px}
+.logo{font-weight:900;font-size:21px;color:var(--navy);letter-spacing:-.4px;white-space:nowrap}
+.logo i{color:var(--orange);font-style:normal}
+.logo small{display:block;font-size:9px;font-weight:400;color:var(--body);letter-spacing:.2px}
+.searchbox{flex:1;display:flex;border:1px solid var(--input-border);border-radius:4px;overflow:hidden;min-width:0}
+.searchbox input{flex:1;border:0;padding:11px 14px;font-size:14px;font-family:inherit;min-width:0}
+.searchbox button{border:0;background:#fff;padding:0 14px;color:var(--navy)}
+.head-icons{display:flex;gap:16px;color:var(--navy);font-size:18px}
+.catnav{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.catnav .wrap{display:flex;align-items:center;gap:16px;padding-top:0;padding-bottom:0;flex-wrap:wrap}
+.catnav .allcat{background:var(--navy);color:#fff;font-size:13px;font-weight:700;padding:11px 16px;border:0;margin-right:4px}
+.catnav a{font-size:13.5px;color:var(--ink);text-decoration:none;padding:12px 0}
+.catnav .rush{margin-left:auto;color:var(--orange);font-weight:700}
+.catnav .sale{border:1px solid var(--orange);color:var(--orange);border-radius:3px;padding:4px 10px;font-weight:700}
+.crumb{font-size:12.5px;color:var(--helper);padding:14px 0 10px}
+.crumb a{color:var(--helper);text-decoration:none}
+
+.pdp-grid{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:40px;align-items:start;padding-bottom:8px}
+.pdp-grid>*{min-width:0}
+.gallery{background:#fff}
+.gal-main{position:relative;background:#F7F7F8;border-radius:4px;display:flex;align-items:center;justify-content:center;padding:10px}
+.gal-main img{height:380px;width:auto;object-fit:contain}
+.gal-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;
+  background:#fff;border:1px solid var(--rule);color:var(--ink);font-size:15px;line-height:1}
+.gal-arrow.l{left:12px} .gal-arrow.r{right:12px}
+.gal-thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.gal-thumbs button{width:62px;height:62px;border:1px solid var(--rule);background:#F7F7F8;border-radius:3px;padding:3px}
+.gal-thumbs button.on{border:2px solid var(--orange)}
+.gal-thumbs img{width:100%;height:100%;object-fit:contain}
+
+/* --- the new sample row (analysis §3a1) --- */
+.sample-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;
+  min-height:52px;border:1px solid var(--rule);border-radius:4px;background:#fff;
+  padding:10px 16px;margin:22px 0 4px;text-align:left}
+.sample-row:hover{border-color:var(--rule-strong)}
+.sample-row .lab{font-size:15px;font-weight:700;color:var(--navy)}
+.sample-row .sub{font-size:13px;color:var(--helper);margin-top:1px}
+.sample-row .go{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap}
+
+.acc{border-bottom:1px solid var(--rule)}
+.acc-head{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:18px 0;text-align:left}
+.acc-head .t{font-size:18px;font-weight:700;color:var(--ink)}
+.acc-head .badge{font-size:11px;font-weight:700;color:var(--orange);background:var(--wash);border-radius:3px;padding:3px 7px}
+.acc-head .meta{font-size:13px;color:var(--helper);font-weight:400}
+.acc-head .chev{margin-left:auto;color:var(--helper);font-size:13px}
+.acc-body{padding:0 0 20px;font-size:15px;color:var(--body)}
+.meth{border:1px solid var(--rule);border-radius:4px;margin-bottom:16px;overflow:hidden}
+.meth-h{background:#FAFAFB;padding:12px 14px;border-bottom:1px solid var(--rule)}
+.meth-h .n{font-size:15px;font-weight:700;color:var(--navy)}
+.meth-h .s{font-size:12.5px;color:var(--helper);margin-top:2px}
+.meth-t{width:100%;border-collapse:collapse;font-size:13px}
+.meth-t th{text-align:left;vertical-align:top;color:var(--helper);font-weight:700;font-size:11px;letter-spacing:.3px;
+  padding:11px 14px;width:150px;border-bottom:1px solid var(--rule)}
+.meth-t td{padding:11px 14px;border-bottom:1px solid var(--rule);color:var(--ink)}
+.meth-t tr:last-child th,.meth-t tr:last-child td{border-bottom:0}
+.locpill{display:inline-block;border:1px solid var(--rule);border-radius:3px;padding:5px 9px;margin:0 6px 6px 0;font-size:12.5px}
+.locpill em{font-style:normal;color:var(--orange);font-weight:700}
+.ok{color:var(--green-ink);font-weight:700}
+.skuline{font-size:13px;color:var(--helper);padding:16px 0 24px}
+.skuline .st{color:var(--green-ink);font-weight:700;margin-left:10px}
+.qa{border-top:1px solid var(--rule);padding:26px 0}
+.qa h5{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.qa .ask{border:1px solid var(--input-border);border-radius:4px;padding:12px 14px;font-size:14px;color:var(--helper)}
+.contact-banner{text-align:center;padding:34px 0 40px;border-top:1px solid var(--rule)}
+.contact-banner h2{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.contact-banner p{font-size:14px;max-width:78ch;margin:0 auto}
+.trustrow{border-top:1px solid var(--rule);display:flex;gap:60px;justify-content:center;padding:26px 0 30px;flex-wrap:wrap}
+.trustrow .ti{display:flex;gap:12px;align-items:flex-start}
+.trustrow .ic{color:var(--orange);font-size:19px}
+.trustrow b{display:block;font-size:13px;color:var(--ink)}
+.trustrow span{font-size:13px;color:var(--body)}
+.site-foot{background:var(--navy);color:#fff;padding:34px 0 26px}
+.site-foot .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;font-size:13px}
+.site-foot h4{font-size:12px;font-weight:700;letter-spacing:.4px;margin-bottom:10px;color:#fff}
+.site-foot a,.site-foot p{color:#C8CEDC;text-decoration:none;display:block;margin-bottom:6px;line-height:1.5}
+.site-foot .copy{border-top:1px solid #16305F;margin-top:26px;padding-top:16px;font-size:12px;color:#8E9AB4;text-align:center}
+.overlay-cookie{position:sticky;bottom:0;background:#14181D;color:#D7DBE1;font-size:13px;padding:12px 16px;
+  display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;z-index:40}
+.overlay-cookie button{background:#fff;border:0;border-radius:3px;padding:6px 16px;font-size:13px;font-weight:700}
+.olark{position:fixed;right:18px;bottom:76px;z-index:50;background:#1B63D8;color:#fff;border:0;border-radius:4px;
+  padding:12px 18px;font-size:14px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.22)}
+.olark .tag{display:block;font-size:10px;font-weight:400;opacity:.8}
+
+/* --- buy box --- */
+.buybox{border:0}
+.bb-sku{display:flex;justify-content:space-between;font-size:12.5px;color:var(--helper);padding-top:2px}
+.bb-h1{font-size:24px;line-height:32px;font-weight:700;color:var(--ink);margin:6px 0 8px}
+.bb-ask{font-size:14px;color:var(--body);margin-bottom:18px}
+.bb-ask a{font-weight:700}
+.stepbar{display:flex;align-items:center;gap:10px;background:var(--navy);color:#fff;padding:9px 14px;border-radius:2px;margin-bottom:14px}
+.stepbar .num{background:rgba(255,255,255,.16);width:20px;height:20px;border-radius:2px;display:flex;
+  align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.stepbar .lab{font-size:14px;font-weight:700}
+.stepbar .tick{margin-left:auto;font-size:13px}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.swatch{width:36px;height:36px;border-radius:50%;padding:2px;background:none;border:0;box-shadow:0 0 0 1px var(--rule)}
+.swatch span{display:block;width:100%;height:100%;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.swatch.on{box-shadow:0 0 0 1px #fff, 0 0 0 3px var(--orange)}
+.colorinfo{font-size:13px;color:var(--body);margin:10px 0 20px}
+.colorinfo b{color:var(--ink)}
+.colorinfo .sep{color:var(--rule-strong);margin:0 8px}
+.tierwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
+.tier{width:100%;border-collapse:collapse;font-size:13px;min-width:320px;table-layout:fixed}
+.tier td,.tier th{padding:7px 2px;text-align:center;white-space:nowrap;border:1px solid var(--rule)}
+.tier th{width:120px;text-align:left;padding-left:8px;color:var(--body);font-weight:400;font-size:12.5px}
+.tier button{background:none;border:0;width:100%;padding:2px;font-size:13px;color:var(--body)}
+.tier td.on{background:var(--wash);border-color:var(--orange)}
+.tier td.on button{color:var(--ink);font-weight:700}
+.tier-cue{font-size:12px;color:var(--helper);padding-top:5px}
+.qtyrow{display:flex;gap:12px;margin:14px 0 16px}
+.qtyfield{flex:1;display:flex;align-items:center;border:1px solid var(--input-border);border-radius:3px;padding:0 12px;height:44px;min-width:0}
+.qtyfield label{font-size:13.5px;color:var(--body);white-space:nowrap;margin-right:6px}
+.qtyfield input{border:0;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);width:100%;min-width:0;padding:0}
+.qtyfield.ro{background:var(--gray-bg)}
+.subtotal{background:var(--gray-bg);padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.subtotal h4{font-size:16px;font-weight:700;color:var(--ink)}
+.subtotal .brk{font-size:13px;font-weight:700;color:var(--orange);background:none;border:0;padding:4px 0 0;text-decoration:underline}
+.subtotal .amt{font-size:16px;font-weight:700;color:var(--ink);text-align:right}
+.subtotal .each{font-size:12px;color:var(--body);text-align:right;margin-top:5px}
+.go-tag{display:inline-block;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;margin:16px 0 4px}
+.cta-primary{width:100%;height:52px;border:0;border-radius:4px;background:var(--orange);color:#fff;
+  font-size:20px;line-height:1.4;font-weight:700}
+.cta-primary:hover{background:var(--orange-hover)}
+
+/* --- the new quote CTA block (analysis §3a2) --- */
+.quote-cta{width:100%;height:48px;border:1px solid var(--navy);border-radius:4px;background:transparent;
+  color:var(--navy);font-size:16px;font-weight:700;margin-top:12px}
+.quote-cta:hover{background:#F4F6FA}
+.quote-cta[disabled]{border-color:var(--rule-strong);color:var(--disabled-text);background:var(--gray-bg);cursor:not-allowed}
+.quote-help{font-size:13px;color:var(--helper);margin-top:8px}
+
+/* --- configurator steps 3-4 --- */
+.recap{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--rule);
+  border-radius:4px;padding:11px 14px;font-size:13.5px;margin-bottom:16px}
+.recap b{color:var(--ink)}
+.recap button{background:none;border:0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline;padding:0}
+.methcards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.methcard{border:1px solid var(--rule);border-radius:8px;background:#fff;padding:12px 16px;text-align:left;flex:1;min-width:150px}
+.methcard .nm{font-size:14px;font-weight:700;color:var(--ink)}
+.methcard .sub{font-size:12px;color:var(--helper);margin-top:3px}
+.methcard.on{border:2px solid var(--orange);background:rgba(254,80,0,.05);padding:11px 15px}
+.fieldrow{margin-bottom:14px}
+.fieldrow label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.fieldrow select,.fieldrow input[type=text],.fieldrow input[type=email]{width:100%;height:44px;border:1px solid var(--input-border);
+  border-radius:3px;padding:0 12px;font-family:inherit;font-size:15px;color:var(--ink);background:#fff}
+.rorow{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:7px 0;border-bottom:1px solid var(--rule)}
+.rorow .k{color:var(--body)} .rorow .v{color:var(--ink);font-weight:700;text-align:right}
+.notew{font-size:13px;color:var(--green-ink);margin:6px 0 12px;line-height:1.5}
+
+/* ============================================================
+   VIEW 2 — QUOTE MODAL
+   ============================================================ */
+.modal-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:180;display:none;
+  align-items:flex-start;justify-content:center;padding:64px 16px 24px;overflow:auto}
+.modal-back.open{display:flex}
+.modal{background:#fff;border-radius:4px;width:760px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,.3);outline:none}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid var(--rule)}
+.modal-head h2{font-size:18px;font-weight:700;color:var(--ink)}
+.modal-x{background:none;border:0;font-size:20px;color:var(--body);width:36px;height:36px;border-radius:3px}
+.modal-body{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:28px;padding:20px 24px 22px}
+.mcard-top{display:flex;gap:12px;align-items:flex-start}
+.mcard-top img{width:56px;height:56px;object-fit:contain;background:#F7F7F8;border-radius:3px;flex:none}
+.mcard-top>span:last-child{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.mcard-top .nm{display:block;font-size:15px;font-weight:700;color:var(--ink);line-height:1.35}
+.mcard-top .chg{display:block;background:none;border:0;padding:0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline;margin-top:2px}
+.cfgline{font-size:14px;color:var(--body);margin-top:10px;line-height:1.5}
+.chg-help{display:block;font-size:12.5px;color:var(--helper);margin-top:2px;line-height:1.4}
+.band{border-radius:3px;padding:10px 12px;font-size:13px;line-height:1.5;margin-top:12px}
+.band.amber{background:var(--amber-bg);border:1px solid var(--amber-rule);color:var(--amber-ink)}
+.band.info{background:var(--info-bg);border:1px solid var(--info-rule);color:var(--info-ink)}
+.band.green{background:var(--green-bg);border:1px solid var(--green-rule);color:var(--green-ink)}
+.mprice{background:var(--gray-bg);padding:12px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.mprice>span:last-child{text-align:right}
+.mprice .k{font-size:15px;font-weight:700;color:var(--ink)}
+.mprice .v{display:block;font-size:18px;font-weight:700;color:var(--ink)}
+.mprice .e{display:block;font-size:12px;color:var(--body);text-align:right;margin-top:3px}
+.brk-toggle{background:none;border:0;padding:8px 0 0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline}
+.brk{border:1px solid var(--rule);border-radius:3px;padding:10px 12px;margin-top:10px;font-size:13px}
+.brk .r{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
+.brk .r.lab{color:var(--helper)}
+.brk .r.tot{border-top:1px solid var(--rule);margin-top:6px;padding-top:8px;font-weight:700;color:var(--ink)}
+.brk .fn{font-size:12px;color:var(--helper);margin-top:8px;line-height:1.45}
+.mform label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.mform input{width:100%;height:46px;border:1px solid var(--input-border);border-radius:3px;padding:0 12px;
+  font-family:inherit;font-size:15px;color:var(--ink)}
+.mform input[aria-invalid=true]{border-color:var(--error-text)}
+.err{font-size:12.5px;color:var(--error-text);margin-top:5px;display:block}
+.privacy{font-size:12px;color:var(--helper);margin-top:12px;line-height:1.45}
+.mcta{width:100%;height:50px;border:0;border-radius:4px;background:var(--orange);color:#fff;font-size:17px;font-weight:700;margin-top:14px}
+.mcta:hover{background:var(--orange-hover)}
+.mcta[disabled]{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
+.reason{font-size:12.5px;color:var(--helper);margin-top:7px;line-height:1.45}
+.spec-block{border:1px solid var(--rule-strong);border-radius:4px;padding:14px;margin-top:2px}
+.spec-block h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.spec-block p{font-size:13.5px;color:var(--body)}
+
+/* ============================================================
+   VIEW 3 — ISSUED QUOTE (web)
+   ============================================================ */
+.q-page{padding:22px 0 60px}
+.q-doc{background:#fff;border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+/* letterhead — the legacy PDF's three-zone band, navy retinted to #001542 */
+.lh{background:var(--navy);color:#fff;display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:24px;padding:20px 28px}
+.lh .logo{color:#fff}
+.lh .logo i{color:var(--orange)}
+.lh .logo small{color:#B9C3D8}
+.lh .addr{font-size:12px;color:#C8CEDC;line-height:1.6;margin-top:8px}
+.lh h4{font-size:12px;font-weight:700;color:#8FA0C4;margin-bottom:6px}
+.lh .z{font-size:13px;color:#fff;line-height:1.6}
+.lh .z b{font-weight:700}
+.q-inner{padding:26px 28px 30px}
+.q-h1row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.q-h1{font-size:24px;line-height:32px;font-weight:700;color:var(--ink)}
+.st-chip{font-size:12px;font-weight:700;border-radius:20px;padding:4px 12px;border:1px solid}
+.st-chip.valid{background:var(--green-bg);border-color:var(--green-rule);color:var(--green-ink)}
+.st-chip.exp{background:var(--amber-bg);border-color:var(--amber-rule);color:var(--amber-ink)}
+.st-chip.dead{background:var(--gray-bg);border-color:var(--rule-strong);color:var(--gray-ink)}
+.st-chip.ord{background:var(--green-bg);border-color:var(--green-rule);color:var(--green-ink)}
+.q-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.act{min-height:44px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule-strong);
+  background:#fff;border-radius:4px;padding:0 16px;font-size:14px;font-weight:700;color:var(--navy)}
+.act:hover{border-color:var(--navy)}
+.q-sec{border-top:1px solid var(--rule);margin-top:24px;padding-top:22px}
+.q-sec h3{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px}
+/* product row */
+.prow{border:1px solid var(--rule);border-radius:4px}
+.prow-head{display:flex;gap:14px;align-items:center;width:100%;background:none;border:0;padding:14px 16px;text-align:left}
+.prow-head img{width:56px;height:56px;object-fit:contain;background:#F7F7F8;border-radius:3px;flex:none}
+.prow-head>span:nth-child(2){display:flex;flex-direction:column;gap:3px;min-width:0}
+.prow-head .nm{display:block;font-size:15px;font-weight:700;color:var(--ink)}
+.prow-head .cf{display:block;font-size:13px;color:var(--body)}
+.prow-head .rt{margin-left:auto;text-align:right;white-space:nowrap}
+.prow-head .rt .k{font-size:12px;color:var(--body)}
+.prow-head .rt .v{font-size:16px;font-weight:700;color:var(--ink)}
+.prow-chev{color:var(--helper);font-size:13px;margin-left:12px}
+.prow-body{border-top:1px solid var(--rule);padding:16px}
+/* the PDF's checkmark-bulleted configuration list */
+.cfg-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 24px}
+.cfg-list li{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--body);padding:6px 0}
+.cfg-list .ck{color:var(--navy);font-weight:700;flex:none;line-height:1.4}
+.cfg-list .k{color:var(--helper)}
+.cfg-list .v{color:var(--ink);font-weight:700}
+/* the PDF's compact price table */
+.ptab{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:16px}
+.ptab th{background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.3px;
+  text-align:right;padding:9px 12px}
+.ptab th:first-child{text-align:left}
+.ptab td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--rule);color:var(--ink)}
+.ptab td:first-child{text-align:left}
+.ptab tr:last-child td{border-bottom:0}
+.tierband{font-size:13px;color:var(--body);margin-top:12px}
+.tierband b{color:var(--ink)}
+.plink{font-size:13.5px;font-weight:700;color:var(--navy);display:inline-block;margin-top:14px}
+/* totals + price flag */
+.totals{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:28px;align-items:start;margin-top:24px}
+.trow{display:flex;justify-content:space-between;gap:14px;font-size:15px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.trow .k{color:var(--body)} .trow .v{color:var(--ink);font-weight:700;text-align:right}
+.trow .calc{background:none;border:0;padding:0;font-size:13.5px;font-weight:700;color:var(--navy);text-decoration:underline}
+.trow small{display:block;font-size:12.5px;color:var(--helper);font-weight:400}
+.flag{background:var(--wash);border:1px solid var(--rule);border-radius:4px;padding:16px 18px;text-align:right}
+.flag .k{font-size:13px;color:var(--body)}
+.flag .v{font-size:32px;line-height:1.15;font-weight:900;color:var(--ink);margin-top:2px}
+.flag .c{font-size:12.5px;color:var(--helper);margin-top:6px}
+.q-cta{width:100%;max-width:420px;height:52px;border:0;border-radius:4px;background:var(--orange);color:#fff;
+  font-size:18px;font-weight:700;margin-top:22px;display:block}
+.q-cta:hover{background:var(--orange-hover)}
+.q-cta.ghost{background:#fff;border:1px solid var(--navy);color:var(--navy)}
+.q-cta-help{font-size:13px;color:var(--helper);margin-top:8px}
+.q-validity{font-size:14px;color:var(--body);margin-top:16px}
+.q-rev{font-size:12.5px;color:var(--helper);margin-top:10px;line-height:1.5}
+/* modules */
+.mod{border:1px solid var(--rule);border-radius:4px;padding:14px 16px;margin-top:14px}
+.mod-check{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--ink);font-weight:700}
+.mod-check input{width:18px;height:18px;margin:3px 0 0;flex:none;accent-color:var(--navy)}
+.mod-help{font-size:13px;color:var(--helper);margin:4px 0 0 28px;line-height:1.5}
+.mod-in{margin:14px 0 0 28px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.btn-mini{min-height:44px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:4px;
+  padding:0 16px;font-size:14px;font-weight:700}
+.btn-mini[disabled]{border-color:var(--rule-strong);color:var(--disabled-text);background:var(--gray-bg);cursor:not-allowed}
+.ratelist{border:1px solid var(--rule);border-radius:4px;margin-top:12px}
+.rate{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-bottom:1px solid var(--rule);cursor:pointer}
+.rate:last-child{border-bottom:0}
+.rate input{width:18px;height:18px;margin:2px 0 0;flex:none;accent-color:var(--navy)}
+.rate>span:nth-child(2){display:flex;flex-direction:column;gap:2px;min-width:0}
+.rate .nm{display:block;font-size:14.5px;color:var(--ink);font-weight:700}
+.rate .dt{display:block;font-size:13px;color:var(--body)}
+.rate .cost{margin-left:auto;font-size:14.5px;font-weight:700;color:var(--ink);white-space:nowrap}
+.det-link{background:none;border:0;padding:0;font-size:14px;font-weight:700;color:var(--navy);text-decoration:underline}
+.spec-card{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;justify-content:space-between;
+  border:1px solid var(--rule);border-radius:4px;padding:16px}
+.spec-card .ph{width:52px;height:52px;border-radius:50%;background:var(--gray-bg);color:var(--helper);
+  display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex:none}
+.spec-card .who{font-size:15px;font-weight:700;color:var(--ink)}
+.spec-card p{font-size:13.5px;color:var(--body);margin-top:3px}
+.q-terms li{font-size:14px;color:var(--body);line-height:1.6;margin-bottom:9px;padding-left:18px;position:relative;max-width:78ch}
+.q-terms li::before{content:"";position:absolute;left:2px;top:9px;width:5px;height:5px;border-radius:50%;background:var(--rule-strong)}
+.q-foot{border-top:1px solid var(--rule);margin-top:24px;padding-top:18px}
+.q-foot .ty{font-size:14px;color:var(--ink);font-weight:700}
+.q-foot .co{font-size:13px;color:var(--helper);margin-top:8px;line-height:1.6}
+.q-arrival{margin-bottom:16px}
+.expired .flag,.expired .ptab,.expired .totals .trow{opacity:.55}
+.mobile-bar{display:none}
+
+/* ============================================================
+   VIEW 4 — PDF SHEET
+   ============================================================ */
+.pdf-stage{background:#6E747E;padding:24px 0 60px}
+.sheet{width:816px;max-width:100%;margin:0 auto;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.35);
+  padding:48px;min-height:1056px;position:relative}
+.sheet .run{display:flex;justify-content:space-between;font-size:11px;color:var(--helper);
+  border-bottom:1px solid var(--rule);padding-bottom:8px;margin-bottom:20px}
+.sheet .lh{background:none;color:var(--ink);padding:0 0 18px;border-bottom:2px solid var(--navy);grid-template-columns:1.2fr 1fr 1fr}
+.sheet .lh .logo{color:var(--navy)} .sheet .lh .addr{color:var(--body)}
+.sheet .lh h4{color:var(--helper)} .sheet .lh .z{color:var(--ink)}
+.sheet h1{font-size:19px;font-weight:700;color:var(--ink);margin:20px 0 4px}
+.sheet .hero{display:flex;gap:20px;align-items:flex-start;margin:16px 0 6px}
+.sheet .hero img{width:150px;background:#F7F7F8;flex:none}
+.sheet .sect{font-size:12px;font-weight:700;color:var(--helper);margin:22px 0 8px}
+.sheet .qr{width:74px;height:74px;background:
+  repeating-linear-gradient(90deg,#1F1F1F 0 6px,transparent 6px 13px),
+  repeating-linear-gradient(0deg,#1F1F1F 0 6px,#fff 6px 13px);flex:none;border:3px solid #fff;outline:1px solid var(--rule)}
+.sheet .foot{border-top:1px solid var(--rule);margin-top:26px;padding-top:14px;display:flex;gap:18px;
+  align-items:center;justify-content:space-between;font-size:12px;color:var(--helper)}
+.wmark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.wmark span{font-size:64px;font-weight:900;color:rgba(31,31,31,.10);transform:rotate(-24deg);white-space:nowrap;
+  border:5px solid rgba(31,31,31,.10);padding:10px 30px;border-radius:8px}
+
+/* ============================================================
+   VIEW 5 — EMAIL
+   ============================================================ */
+.mail-stage{background:#DDE1E6;padding:24px 0 60px}
+.mail-meta{max-width:600px;margin:0 auto 16px;background:#fff;border:1px solid var(--rule);border-radius:4px;padding:16px}
+.mail-meta .r{display:flex;gap:12px;font-size:13.5px;padding:4px 0}
+.mail-meta .r .k{color:var(--helper);width:86px;flex:none;font-weight:700}
+.mail-meta .r .v{color:var(--ink)}
+.mail{width:600px;max-width:100%;margin:0 auto;background:#fff}
+.mail .pad{padding:26px 28px}
+.mail .hd{border-bottom:1px solid var(--rule);padding:20px 28px}
+.mail h1{font-size:19px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.mail .lede{font-size:15px;color:var(--body);line-height:1.6}
+.mail .rows{border:1px solid var(--rule);border-radius:4px;margin-top:18px}
+.mail .rows .r{display:flex;gap:14px;padding:10px 14px;border-bottom:1px solid var(--rule);font-size:14px}
+.mail .rows .r:last-child{border-bottom:0}
+.mail .rows .k{color:var(--helper);width:108px;flex:none}
+.mail .rows .v{color:var(--ink);font-weight:700}
+.mail .btn{display:block;text-align:center;background:var(--orange);color:#fff;text-decoration:none;
+  border-radius:4px;height:44px;line-height:44px;font-size:16px;font-weight:700;margin-top:20px}
+.mail .fine{font-size:13px;color:var(--body);margin-top:16px;line-height:1.6}
+.mail .att{display:flex;gap:10px;align-items:center;border:1px solid var(--rule);border-radius:4px;
+  padding:12px 14px;margin-top:14px;font-size:13.5px;color:var(--ink)}
+.mail .sig{border-top:1px solid var(--rule);margin-top:22px;padding-top:16px;font-size:13.5px;color:var(--body);line-height:1.7}
+.mail .tfoot{background:var(--gray-bg);padding:16px 28px;font-size:12px;color:var(--helper);line-height:1.6}
+
+/* ============================================================
+   RESPONSIVE — 375
+   ============================================================ */
+@media (max-width:960px){
+  .pdp-grid{grid-template-columns:minmax(0,1fr);gap:26px}
+  .modal-back{padding:0;align-items:stretch}
+  .modal{width:100%;border-radius:0;min-height:100%;display:flex;flex-direction:column}
+  .modal-body{grid-template-columns:minmax(0,1fr);gap:22px;overflow:auto}
+  .totals{grid-template-columns:minmax(0,1fr);gap:16px}
+  .flag{text-align:left}
+  .lh{grid-template-columns:minmax(0,1fr);gap:16px}
+  .cfg-list{grid-template-columns:minmax(0,1fr)}
+  .site-foot .cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sheet{padding:24px}
+  .mobile-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;
+    border-top:1px solid var(--rule);box-shadow:0 -4px 16px rgba(0,0,0,.10);padding:10px 14px;
+    gap:12px;align-items:center}
+  .mobile-bar .k{font-size:12px;color:var(--body)}
+  .mobile-bar .v{font-size:17px;font-weight:700;color:var(--ink)}
+  .mobile-bar .go{margin-left:auto;min-height:44px;border:0;border-radius:4px;background:var(--orange);
+    color:#fff;font-size:15px;font-weight:700;padding:0 18px}
+  #view-quote .q-page{padding-bottom:96px}
+  .olark{bottom:88px;padding:10px 14px;font-size:13px}
+  body.qview .olark{bottom:96px}
+  .toast{bottom:96px}
+  .gal-main img{height:260px}
+  .trustrow{gap:24px}
+  .state-chips .lbl{min-width:0;width:100%}
+}
+@media (max-width:680px){
+  /* the collapsed product row stops being a single squeezed flex line */
+  .prow-head{flex-wrap:wrap}
+  .prow-head>span:nth-child(2){flex:1 1 100%;order:3;width:100%}
+  .prow-head .rt{margin-left:0;order:4;flex:1 1 100%;text-align:left;display:flex;gap:8px;align-items:baseline}
+  .prow-head .rt br{display:none}
+  .prow-chev{order:2;margin-left:auto}
+  /* the price table becomes stacked label/value rows — no horizontal scroll */
+  .ptab thead{display:none}
+  .ptab,.ptab tbody,.ptab tr,.ptab td{display:block;width:100%}
+  .ptab{margin-top:14px}
+  .ptab tr{border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+  .ptab td{display:flex;justify-content:space-between;gap:14px;text-align:right;padding:10px 12px}
+  .ptab td:first-child{text-align:right}
+  .ptab td::before{content:attr(data-l);color:var(--body);font-weight:400;text-align:left}
+}
+@media (max-width:520px){
+  .wrap,.wrap-narrow{padding:0 14px}
+  .q-actions .act{flex:1;justify-content:center;padding:0 10px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .methcards{flex-direction:column}
+  .q-cta{max-width:none}
+}
+
+/* ============================================================
+   PRINT — the real PDF path, over view 3
+   ============================================================ */
+@media print{
+  @page{size:letter;margin:0.5in}
+  body{background:#fff;color:#111}
+  .proto-bar,.proto-help,.chipdeck,.ann-list,.site,.q-arrival,.mobile-bar,.toast,.modal-back,
+  .pdf-stage,.mail-stage,.q-actions,.prow-chev,.mod-in,.mod-check input,.det-link,
+  .spec-card .btn-mini,.overlay-cookie,.olark,.trow .calc,.q-cta-help,.no-print{display:none !important}
+  .view{display:none !important}
+  #view-quote{display:block !important}
+  .wrap-narrow{max-width:none;padding:0}
+  .q-page{padding:0}
+  .q-doc{border:0;border-radius:0}
+  .lh{background:none !important;color:#111 !important;padding:0 0 14px;border-bottom:2px solid #001542}
+  .lh .logo,.lh .z{color:#001542 !important} .lh .addr,.lh h4{color:#444 !important}
+  .q-inner{padding:14px 0 0}
+  .ptab th{background:#fff !important;color:#111 !important;border-bottom:2px solid #001542}
+  .flag{background:#fff !important;border:1px solid #999}
+  .q-cta{display:none !important}
+  .prow-body{display:block !important}
+  .print-only{display:block !important}
+  #qRun{display:flex !important}
+  .prow,.totals,.q-sec,.q-terms li,.ptab{page-break-inside:avoid}
+  #qDoc{position:relative}
+  #qWm[hidden]{display:none !important}
+  #qWm{display:flex !important;position:absolute;inset:0;z-index:5}
+}
+.print-only{display:none}
+</style>
+</head>
+<body class="show-ann">
+
+<!-- ============================================================
+     PROTOTYPE CHROME
+     ============================================================ -->
+<div class="proto-bar">
+  <b>Instant Quote v2</b>
+  <button class="proto-tab on" data-v="pdp">1 &middot; PDP</button>
+  <button class="proto-tab" data-v="modal">2 &middot; Quote modal</button>
+  <button class="proto-tab" data-v="quote">3 &middot; Issued quote</button>
+  <button class="proto-tab" data-v="pdf">4 &middot; PDF</button>
+  <button class="proto-tab" data-v="email">5 &middot; Email</button>
+  <span class="proto-sep"></span>
+  <button class="proto-toggle on" id="annToggle">Annotations: on</button>
+  <span class="proto-note">promotionpros.com &middot; 2026-09-09 &middot; v2</span>
+</div>
+<div class="proto-help" id="protoHelp"></div>
+
+<!-- ============================================================
+     VIEW 1 — PDP, faithful to the 2026-09-09 wine-tumbler capture
+     ============================================================ -->
+<section class="view on" id="view-pdp">
+  <div class="wrap chipdeck">
+    <div class="state-chips">
+      <span class="lbl">Sample row</span>
+      <button class="chip on" id="chipSampleYes">Eligible</button>
+      <button class="chip" id="chipSampleNo">Not eligible</button>
+    </div>
+    <div class="state-chips">
+      <span class="lbl">Configurator</span>
+      <button class="chip on" id="chipCfgClosed">Closed</button>
+      <button class="chip" id="chipCfgOpen">Open (steps 3&ndash;4)</button>
+    </div>
+    <div class="state-chips">
+      <span class="lbl">Decoration</span>
+      <button class="chip on" id="chipDecDefault">Defaulted</button>
+      <button class="chip" id="chipDecSet">Set by the buyer</button>
+    </div>
+    <div class="state-chips">
+      <span class="lbl">Priceable</span>
+      <button class="chip on" id="chipPriceOk">Yes</button>
+      <button class="chip" id="chipPriceQty">No &mdash; above the top tier</button>
+    </div>
+    <div class="ann-list">
+      <span class="hd">What is new on this page</span>
+      <ul>
+        <li><b>Sample row</b> &mdash; between the carousel and the Description accordion, the only left-column slot above the content. Outline ghost, never orange. This product has <b>no sample affordance in production</b>; the eligible state is shown for demonstration and the real price threshold is a Boris ask.</li>
+        <li><b>Quote CTA</b> &mdash; directly under the orange CTA, same width, 48px, transparent with a 1px navy border, plus a 13px grey helper line. Everything above it is reproduced from production.</li>
+        <li>Everything else on this page &mdash; header, gallery, accordions, buy box, footer, cookie banner and the Olark widget &mdash; is a reproduction of the live PDP, not a proposal.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="site">
+    <div class="util">
+      <div class="wrap">
+        <span class="star">&#9733;</span> <span>ShopperApproved &nbsp;|&nbsp; EXCELLENT 4.80 OUT OF 5</span>
+        <span class="right">
+          <span>Speak to a Pro <a class="tel" href="tel:8446677666">(844) 667-7666</a></span>
+          <a href="#">Live Chat</a><a href="#">f</a><a href="#">ig</a>
+        </span>
+      </div>
+    </div>
+    <div class="head-main">
+      <div class="wrap">
+        <div class="logo">Promotion<i>Pros</i><small>Put your brand on it.</small></div>
+        <div class="searchbox"><input type="text" aria-label="Search for items and brands" placeholder="Search for items and brands"><button aria-label="Search">&#9906;</button></div>
+        <div class="head-icons"><span>&#9737;</span><span>&#9825;</span><span>&#128722;</span></div>
+      </div>
+    </div>
+    <nav class="catnav">
+      <div class="wrap">
+        <button class="allcat">&#9776; All Categories</button>
+        <a href="#">USA Made</a><a href="#">Budget Buys</a><a href="#">Apparel</a><a href="#">Bags</a>
+        <a href="#">Drinkware</a><a href="#">Office &amp; Awards</a><a href="#">Stationery</a>
+        <a class="rush" href="#">In a Rush? &#128293;</a><a class="sale" href="#">On Sale</a>
+      </div>
+    </nav>
+
+    <div class="wrap">
+      <nav class="crumb" aria-label="breadcrumb"><a href="#">Drinkware</a> &rsaquo; <a href="#">Travel Mugs &amp; Tumblers Stainless Steel</a></nav>
+
+      <div class="pdp-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+          <div class="gallery">
+            <div class="gal-main">
+              <button class="gal-arrow l" aria-label="Previous Slide">&#8249;</button>
+              <img id="galMain" alt="10 Oz Stainless Wine Tumbler">
+              <button class="gal-arrow r" aria-label="Next Slide">&#8250;</button>
+            </div>
+            <div class="gal-thumbs" id="galThumbs"></div>
+          </div>
+
+          <!-- NEW: sample row, left column, above the accordions -->
+          <button class="sample-row" id="sampleRow">
+            <span>
+              <span class="lab">Get a free sample</span>
+              <span class="sub">One free sample per product, delivered in about a week.</span>
+            </span>
+            <span class="go">Request a sample</span>
+          </button>
+
+          <section class="acc">
+            <button class="acc-head" aria-expanded="true"><span class="t">Description</span><span class="chev">&#9650;</span></button>
+            <div class="acc-body"><p>10 Oz Stainless Wine Tumbler</p></div>
+          </section>
+
+          <section class="acc">
+            <button class="acc-head" aria-expanded="true"><span class="t">Decoration &amp; Imprint</span><span class="badge">2 methods</span><span class="chev">&#9650;</span></button>
+            <div class="acc-body">
+              <div class="meth">
+                <div class="meth-h"><div class="n">Laser Engraved</div><div class="s">Full-color imprint &middot; 1 location included &middot; no setup charge &middot; 6 locations</div></div>
+                <table class="meth-t">
+                  <tr><th>LOCATIONS &amp; SIZES</th><td>
+                    <span class="locpill">Back <em>1.5&Prime;W &times; 2&Prime;H</em></span><span class="locpill">Front <em>1.5&Prime;W &times; 2&Prime;H</em></span>
+                    <span class="locpill">Back <em>1.75&Prime;W &times; 4.25&Prime;H</em></span><span class="locpill">Front <em>1.75&Prime;W &times; 4.25&Prime;H</em></span>
+                    <span class="locpill">Two Sided <em>1.75&Prime;W &times; 4.25&Prime;H</em></span><span class="locpill">No Imprint</span>
+                  </td></tr>
+                  <tr><th>MAX COLORS</th><td>Full color</td></tr>
+                  <tr><th>INCLUDED</th><td><span class="ok">&#10003; Full-color imprint in one location &mdash; no setup charge</span></td></tr>
+                  <tr><th>CHARGES</th><td>ADD&rsquo;L LOCATION <b>$1.25</b>/item &nbsp;&nbsp; PMS COLOR MATCH <b>+$50.00</b></td></tr>
+                </table>
+              </div>
+              <div class="meth">
+                <div class="meth-h"><div class="n">Screen Printed</div><div class="s">no setup charge &middot; Up to 1 color &middot; 6 locations</div></div>
+                <table class="meth-t">
+                  <tr><th>LOCATIONS &amp; SIZES</th><td>
+                    <span class="locpill">Back <em>1.5&Prime;W &times; 2&Prime;H</em></span><span class="locpill">Front <em>1.5&Prime;W &times; 2&Prime;H</em></span>
+                    <span class="locpill">Back <em>1.75&Prime;W &times; 4.25&Prime;H</em></span><span class="locpill">Front <em>1.75&Prime;W &times; 4.25&Prime;H</em></span>
+                    <span class="locpill">Two Sided <em>1.75&Prime;W &times; 4.25&Prime;H</em></span><span class="locpill">No Imprint</span>
+                  </td></tr>
+                  <tr><th>MAX COLORS</th><td>Up to 1 color</td></tr>
+                  <tr><th>CHARGES</th><td>ADD&rsquo;L LOCATION <b>$1.25</b>/item &nbsp;&nbsp; PMS COLOR MATCH <b>+$50.00</b></td></tr>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="acc">
+            <button class="acc-head" aria-expanded="true"><span class="t">Production &amp; Shipping</span><span class="meta">Estimated delivery by Tue, Sep 22</span><span class="chev">&#9650;</span></button>
+            <div class="acc-body">
+              <ul>
+                <li style="padding:4px 0">&bull; Free digital proof &mdash; typically within 24 hours.</li>
+                <li style="padding:4px 0">&bull; Production: approximately 5 business days after proof approval.</li>
+                <li style="padding:4px 0">&bull; Estimated delivery by Tue, Sep 22 &middot; FedEx Ground.</li>
+              </ul>
+            </div>
+          </section>
+
+          <div class="skuline">SKU: GLD0001055 <span class="st">IN STOCK</span></div>
+        </div>
+
+        <!-- RIGHT COLUMN — BUY BOX -->
+        <div class="buybox">
+          <div class="bb-sku"><span>SKU: GLD0001055</span><span>&#9825; Wishlist</span></div>
+          <h1 class="bb-h1">10 Oz Stainless Wine Tumbler</h1>
+          <p class="bb-ask">Have a product question? <a href="#">Ask us</a></p>
+
+          <div id="stepsTop">
+            <div class="stepbar"><span class="num">1</span><span class="lab">Colors</span><span class="tick">&#10003;</span></div>
+            <div class="swatches" id="pdpSwatches"></div>
+            <p class="colorinfo"><b id="colorName">Blue</b><span class="sep">|</span>6,765 in stock</p>
+
+            <div class="stepbar"><span class="num">2</span><span class="lab">Quantity</span><span class="tick">&#10003;</span></div>
+            <div class="tierwrap"><table class="tier" id="tierTable" aria-label="Price per unit by quantity. Choose a quantity by activating a column."><tbody></tbody></table></div>
+            <p class="tier-cue" id="tierCue" hidden>Scroll the table sideways for more quantities.</p>
+
+            <div class="qtyrow">
+              <span class="qtyfield"><label for="qtyIn">Quantity:</label><input id="qtyIn" type="text" inputmode="numeric" value="25" aria-label="Product Quantity"></span>
+              <span class="qtyfield ro"><label for="unitIn">Unit Price:</label><input id="unitIn" type="text" value="$11.96" readonly aria-label="Product Price"></span>
+            </div>
+          </div>
+
+          <div id="stepsWizard" hidden>
+            <div class="recap"><span>Color: <b id="recapColor">Blue</b> &middot; Quantity: <b id="recapQty">25</b></span><button id="recapEdit">Edit Color &amp; Quantity</button></div>
+            <div class="stepbar"><span class="num">3</span><span class="lab">Decoration Method</span></div>
+            <div class="methcards" role="radiogroup" aria-label="Select imprint method">
+              <button class="methcard on" id="methLaser" aria-pressed="true"><span class="nm">Laser Engraved</span><span class="sub">Full color &middot; 6 locations</span></button>
+              <button class="methcard" id="methScreen" aria-pressed="false"><span class="nm">Screen Printed</span><span class="sub">Up to 1 color &middot; 6 locations</span></button>
+            </div>
+            <p class="notew" id="methNote">&#10003; First imprint included &mdash; full color, one location, no setup charge. Add locations below &mdash; extras are priced separately.</p>
+            <div class="stepbar"><span class="num">4</span><span class="lab">Imprint Details</span></div>
+            <div class="fieldrow">
+              <label for="locSel">Imprint location</label>
+              <select id="locSel">
+                <option>Back</option><option>Front (small)</option><option>Front (large)</option><option>Two Sided</option><option>No Imprint</option>
+              </select>
+            </div>
+            <div class="rorow"><span class="k">Imprint Colors</span><span class="v" id="roColors">Full Color</span></div>
+            <div class="rorow"><span class="k">Imprint #1 cost:</span><span class="v" id="roCost">Free</span></div>
+          </div>
+
+          <div class="subtotal">
+            <div><h4>Subtotal with Setup Fee:</h4><button class="brk" id="pdpBrk">View Price Breakdown</button></div>
+            <div><div class="amt" id="pdpSubtotal">$299.00</div><div class="each" id="pdpEach">Price each: $11.96</div></div>
+          </div>
+
+          <span class="go-tag">GO!</span>
+          <button class="cta-primary" id="ctaPrimary">Customize Your Product</button>
+
+          <!-- NEW: the quote CTA + helper -->
+          <button class="quote-cta" id="quoteCta">Get an instant quote</button>
+          <p class="quote-help" id="quoteHelp">Priced now, good for 30 days. No call, no waiting.</p>
+        </div>
+      </div>
+
+      <section class="qa">
+        <h5>Questions &amp; Answers</h5>
+        <div class="ask">Ask a question&hellip;</div>
+        <p style="font-size:14px;margin-top:14px">Popular Questions</p>
+        <p style="font-size:13px;color:var(--helper);border:1px solid var(--rule);border-radius:4px;padding:16px;margin-top:8px;text-align:center">No questions have been asked yet, ask your question above.</p>
+      </section>
+    </div>
+
+    <div class="contact-banner">
+      <h2>Chat with or Call Our Friendly Wisconsin Staff</h2>
+      <p>Questions about uploading artwork? Or pricing, options, process, or anything else? Use the live chat on the lower right of this page, or call us at <b>(844) 667-7666</b> during office hours to speak to a friendly, helpful professional.</p>
+    </div>
+    <div class="trustrow">
+      <span class="ti"><span class="ic">&#128274;</span><span><b>SECURE SHOPPING</b><span>You&rsquo;re in safe hands</span></span></span>
+      <span class="ti"><span class="ic">&#127991;</span><span><b>OVER 75,000 ITEMS</b><span>We have everything you need</span></span></span>
+    </div>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div class="cols">
+          <div><h4>INFORMATION</h4><a href="#">Accessibility Statement</a><a href="#">Artwork Guidelines</a><a href="#">Return Policy</a><a href="#">Shipping Information</a></div>
+          <div><h4>CUSTOMER SERVICE</h4><a href="#">Search</a><a href="#">Reviews</a><a href="#">Blog</a><a href="#">About Us</a></div>
+          <div><h4>MY ACCOUNT</h4><a href="#">My account</a><a href="#">Orders</a><a href="#">Addresses</a><a href="#">Shopping cart</a></div>
+          <div><h4>CONTACT</h4><p>131 N Main St, West Bend, WI 53095</p><p>262 429 1300</p><p>info@promotionpros.com</p></div>
+        </div>
+        <div class="copy">Copyright &copy; 2026 Promotion Pros &middot; Branded Merchandise and Promotional Products. All rights reserved.</div>
+      </div>
+    </footer>
+  </div>
+  <div class="overlay-cookie" id="cookieBar">We use cookies to improve your experience. <button id="cookieOk">OK</button></div>
+</section>
+
+<!-- ============================================================
+     VIEW 3 — ISSUED QUOTE (web)
+     ============================================================ -->
+<section class="view" id="view-quote">
+  <div class="wrap chipdeck no-print">
+    <div class="state-chips">
+      <span class="lbl">Quote state</span>
+      <button class="chip on" data-qs="valid">Valid</button>
+      <button class="chip" data-qs="expiring">Expiring</button>
+      <button class="chip" data-qs="expired">Expired</button>
+      <button class="chip" data-qs="ordered">Ordered</button>
+      <button class="chip" data-qs="invalid">Invalid link</button>
+    </div>
+    <div class="state-chips">
+      <span class="lbl">Delivery</span>
+      <button class="chip on" data-ds="off">Off</button>
+      <button class="chip" data-ds="addr">Address</button>
+      <button class="chip" data-ds="opts">Options</button>
+      <button class="chip" data-ds="chosen">Chosen</button>
+      <button class="chip" data-ds="empty">No rates</button>
+    </div>
+    <div class="state-chips">
+      <span class="lbl">Other</span>
+      <button class="chip" id="chipDetails">Details added</button>
+      <button class="chip on" id="chipSpecNamed">Named specialist</button>
+      <button class="chip" id="chipSpecLine">Sales line</button>
+      <button class="chip" id="chipArrival">First arrival band</button>
+    </div>
+    <div class="ann-list">
+      <span class="hd">Read against the legacy PDF</span>
+      <ul>
+        <li><b>Kept for recognition:</b> the three-zone navy letterhead (retinted <b>#0F2145 &rarr; #001542</b>), the &ldquo;#SKU &ndash; Name&rdquo; heading with a hero, the checkmark-bulleted configuration, the compact price table, the single orange action, and the closing thank-you line.</li>
+        <li><b>Inverted:</b> the big highlighted figure is now the <b>total</b>, with the per-unit average as its caption &mdash; approvers approve totals.</li>
+        <li><b>Dropped:</b> the &ldquo;prices are not final&rdquo; disclaimer (a validity-scoped term replaces it), the $999,999.00 LTL sentinel, &ldquo;Request Dates&rdquo;, the admin pay link, the free-text internal Notes bullet, and Open Sans.</li>
+        <li><b>Added:</b> quote number, issued and valid-through dates, generation date, expired watermark, a named specialist block, and delivery + details as modules on the document rather than fields in the request.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap-narrow q-page">
+    <div class="band green q-arrival no-print" id="qArrival" hidden>Your quote is ready. We emailed a copy with the PDF to dana@northlakeevents.com.</div>
+
+    <div class="q-doc" id="qDoc">
+      <div class="wmark print-only" id="qWm" hidden><span id="qWmTxt">Expired</span></div>
+      <div class="print-only" id="qRun" style="display:flex;justify-content:space-between;font-size:11px;color:#666;border-bottom:1px solid #EEE;padding-bottom:8px;margin-bottom:14px"><span>Quote Q-48310 &middot; PromotionPros</span><span>promotionpros.com/q/48310</span></div>
+      <!-- letterhead, three zones, remapped from the legacy PDF -->
+      <div class="lh">
+        <div>
+          <div class="logo">Promotion<i>Pros</i><small>Put your brand on it.</small></div>
+          <div class="addr">131 N Main St, West Bend, WI 53095<br>PO Box 207 &middot; (844) 667-7666</div>
+        </div>
+        <div><h4>Prepared for</h4><div class="z" id="lhFor"></div></div>
+        <div><h4>Quote</h4><div class="z" id="lhMeta"></div></div>
+      </div>
+
+      <div class="q-inner">
+        <div class="q-h1row">
+          <h1 class="q-h1" id="qH1">Quote Q-48310</h1>
+          <span class="st-chip valid" id="qChip">Valid</span>
+        </div>
+        <div class="q-actions no-print">
+          <button class="act" id="actPdf">&#8681; Download PDF</button>
+          <button class="act" id="actShare">&#8599; Share link</button>
+          <button class="act" id="actPrint">&#9113; Print</button>
+        </div>
+
+        <div class="q-sec">
+          <h3>Product and configuration</h3>
+          <div class="prow">
+            <button class="prow-head" id="prowHead" aria-expanded="false" aria-controls="prowBody">
+              <img id="qThumb" alt="">
+              <span>
+                <span class="nm" id="qProdName">#GLD0001055 &ndash; 10 Oz Stainless Wine Tumbler</span>
+                <span class="cf" id="qCfgLine"></span>
+              </span>
+              <span class="rt"><span class="k">Subtotal with Setup Fee:</span><br><span class="v" id="qRowSub">$330.25</span></span>
+              <span class="prow-chev" id="prowChev">&#9660;</span>
+            </button>
+            <div class="prow-body" id="prowBody" hidden>
+              <ul class="cfg-list" id="qCfgList"></ul>
+              <table class="ptab">
+                <thead><tr><th>Qty</th><th>Run charge</th><th>Setup</th><th>Price per item</th><th>Total Price</th></tr></thead>
+                <tbody><tr id="qPtabRow"></tr></tbody>
+              </table>
+              <p class="tierband" id="qTierBand"></p>
+              <a class="plink" href="#" id="qProdLink">View this product on promotionpros.com</a>
+            </div>
+          </div>
+
+          <div class="totals">
+            <div>
+              <div class="trow"><span class="k">Subtotal with Setup Fee:</span><span class="v" id="tSub">$330.25</span></div>
+              <div class="trow" id="tShipRow"><span class="k">Delivery</span><span class="v" id="tShip"></span></div>
+              <div class="trow"><span class="k">Sales tax</span><span class="v" style="font-weight:400;color:var(--body)">added at checkout where applicable</span></div>
+            </div>
+            <div class="flag">
+              <div class="k" id="flagLabel">Total Price</div>
+              <div class="v" id="flagValue">$330.25</div>
+              <div class="c" id="flagCaption">Average price per unit $13.21</div>
+            </div>
+          </div>
+
+          <button class="q-cta" id="qCta">Order this quote</button>
+          <p class="q-cta-help" id="qCtaHelp">Restores this exact configuration at the quoted price.</p>
+          <p class="q-validity" id="qValidity"></p>
+          <p class="q-rev" id="qRev" hidden></p>
+        </div>
+
+        <!-- delivery module -->
+        <div class="q-sec no-print">
+          <h3>Delivery</h3>
+          <div class="mod">
+            <label class="mod-check"><input type="checkbox" id="delChk"><span>Calculate delivery</span></label>
+            <p class="mod-help">Adds a shipping cost and an arrival date to this quote. Without it, the quote says shipping is calculated at checkout.</p>
+            <div class="mod-in" id="delIn" hidden>
+              <div id="delAddr">
+                <div class="fieldrow"><label for="delStreet">Street address</label><input type="text" id="delStreet" value="2140 W Grand Ave"></div>
+                <div class="grid2">
+                  <div class="fieldrow"><label for="delCity">City</label><input type="text" id="delCity" value="Chicago"></div>
+                  <div class="fieldrow"><label for="delZip">ZIP code</label><input type="text" id="delZip" value="60612"></div>
+                </div>
+                <button class="btn-mini" id="delGo">Show delivery options</button>
+                <p class="reason">Rates come from the same service checkout uses.</p>
+              </div>
+              <div id="delOpts" hidden>
+                <div class="addr-summary" style="display:flex;justify-content:space-between;gap:14px;font-size:14px">
+                  <span>2140 W Grand Ave, Chicago, IL 60612</span>
+                  <button class="det-link" id="delChange">Change address</button>
+                </div>
+                <fieldset style="border:0;padding:0;margin:0"><legend class="sr">Delivery options</legend>
+                  <div class="ratelist" id="rateList"></div>
+                </fieldset>
+                <p class="reason">Includes 5 business days production after you approve your proof.</p>
+              </div>
+              <div class="band amber" id="delEmpty" hidden>No rates came back for 60612. Check the address, or leave delivery off and we&rsquo;ll price shipping at checkout.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- details module -->
+        <div class="q-sec no-print">
+          <h3>Your details</h3>
+          <p style="font-size:14px" id="detSummary">Dana Whitfield &middot; dana@northlakeevents.com</p>
+          <button class="det-link" id="detToggle" style="margin-top:8px">Add company, phone or need-by date</button>
+          <div class="mod-in" id="detIn" hidden style="margin-left:0">
+            <div class="grid2">
+              <div class="fieldrow"><label for="detCo">Company</label><input type="text" id="detCo" value="Northlake Events"></div>
+              <div class="fieldrow"><label for="detPh">Phone</label><input type="text" id="detPh" value="(312) 555-0148"></div>
+            </div>
+            <p class="reason" style="margin-top:-6px">Only used if a specialist needs to reach you about this quote.</p>
+            <div class="fieldrow"><label for="detBy">Need-by date</label><input type="text" id="detBy" value="Oct 2, 2026"></div>
+            <button class="btn-mini" id="detSave">Save details</button>
+          </div>
+        </div>
+
+        <div class="q-sec">
+          <h3>Your specialist</h3>
+          <div class="spec-card">
+            <span class="ph" id="specPh">TA</span>
+            <span style="flex:1;min-width:180px">
+              <span class="who" id="specWho">Terry Alvarez</span>
+              <p id="specBody"></p>
+            </span>
+            <button class="btn-mini no-print" id="specBtn">Message us about this quote</button>
+          </div>
+        </div>
+
+        <div class="q-sec">
+          <h3>Terms</h3>
+          <ul class="q-terms" id="qTerms"></ul>
+          <div class="q-foot">
+            <p class="ty">Thank you for your request! We look forward to earning your business.</p>
+            <p class="co">PromotionPros &middot; 131 N Main St, West Bend, WI 53095 &middot; (844) 667-7666 &middot; info@promotionpros.com</p>
+            <p class="co print-only" id="qGenLine"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- invalid-link recovery, a page not a 404 -->
+    <div class="q-doc" id="qInvalid" hidden>
+      <div class="q-inner">
+        <h1 class="q-h1">This quote link doesn&rsquo;t resolve</h1>
+        <p style="font-size:15px;margin-top:10px;max-width:70ch">Check that you copied the whole link, including everything after the last slash. If it still doesn&rsquo;t open, call <b>(844) 667-7666</b> with the quote number and we&rsquo;ll resend it.</p>
+        <button class="q-cta ghost" style="margin-top:20px">Back to promotionpros.com</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-bar no-print" id="mobBar">
+    <span><span class="k" id="mobK">Total Price</span><br><span class="v" id="mobV">$330.25</span></span>
+    <button class="go" id="mobGo">Order this quote</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIEW 4 — PDF SHEET
+     ============================================================ -->
+<section class="view" id="view-pdf">
+  <div class="wrap chipdeck">
+    <div class="state-chips">
+      <span class="lbl">Sheet</span>
+      <button class="chip" id="pdfPrint">Print this now (runs the real @media print stylesheet over view 3)</button>
+    </div>
+    <div class="ann-list">
+      <span class="hd">How this view works</span>
+      <ul>
+        <li>The sheet below is a <b>Letter-proportioned preview</b> of the attachment. The real path is a headless print of view 3 &mdash; one template, so the page and the PDF cannot drift.</li>
+        <li>It mirrors view 3&rsquo;s state: set delivery, details, the specialist and the quote state on view 3 and they render here.</li>
+        <li>Differences from the web page, by design: the product row is always expanded, the action bar and every form control are hidden, the orange button becomes a short link beside a QR code, the specialist is text not a button, and a running header, page counter and generation date are added. The expired state adds the diagonal watermark.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pdf-stage">
+    <div class="sheet" id="sheet">
+      <div class="wmark" id="sheetWm" hidden><span id="sheetWmTxt">Expired</span></div>
+      <div class="run"><span id="sheetRun">Quote Q-48310 &middot; PromotionPros</span><span>Page 1 of 1</span></div>
+      <div class="lh">
+        <div>
+          <div class="logo">Promotion<i>Pros</i><small>Put your brand on it.</small></div>
+          <div class="addr">131 N Main St, West Bend, WI 53095<br>PO Box 207 &middot; (844) 667-7666</div>
+        </div>
+        <div><h4>Prepared for</h4><div class="z" id="sheetFor"></div></div>
+        <div><h4>Quote</h4><div class="z" id="sheetMeta"></div></div>
+      </div>
+      <div class="hero">
+        <img id="sheetImg" alt="">
+        <div style="flex:1;min-width:0">
+          <h1 id="sheetName">#GLD0001055 &ndash; 10 Oz Stainless Wine Tumbler</h1>
+          <ul class="cfg-list" id="sheetCfg" style="grid-template-columns:minmax(0,1fr)"></ul>
+        </div>
+      </div>
+      <div class="sect">Price</div>
+      <table class="ptab">
+        <thead><tr><th>Qty</th><th>Run charge</th><th>Setup</th><th>Price per item</th><th>Total Price</th></tr></thead>
+        <tbody><tr id="sheetPtab"></tr></tbody>
+      </table>
+      <div class="totals" style="margin-top:18px">
+        <div id="sheetTotals"></div>
+        <div class="flag"><div class="k" id="sheetFlagK">Total Price</div><div class="v" id="sheetFlagV">$330.25</div><div class="c" id="sheetFlagC">Average price per unit $13.21</div></div>
+      </div>
+      <div class="sect">Specialist</div>
+      <p style="font-size:13px;color:var(--ink)" id="sheetSpec"></p>
+      <div class="sect">Terms</div>
+      <ul class="q-terms" id="sheetTerms" style="font-size:12.5px"></ul>
+      <p style="font-size:13px;color:var(--ink);font-weight:700;margin-top:24px">Thank you for your request! We look forward to earning your business.</p>
+      <div class="foot">
+        <span class="qr" aria-hidden="true"></span>
+        <span style="flex:1">View online, share, or order at <b>promotionpros.com/q/48310</b></span>
+        <span id="sheetGen"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIEW 5 — EMAIL
+     ============================================================ -->
+<section class="view" id="view-email">
+  <div class="wrap chipdeck">
+    <div class="ann-list">
+      <span class="hd">Transactional, not Klaviyo marketing</span>
+      <ul>
+        <li>Subject and preheader both name the <b>quote number, product, total and validity</b>, so the message is findable and decidable weeks later.</li>
+        <li>Single 600px column, explicit background colors for dark mode, PDF attached, reply-to the assigned specialist.</li>
+        <li>A module saved on the quote does not mail on its own. An explicit re-send uses the same template with an <b>Updated:</b> subject prefix and regenerates the PDF first.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mail-stage">
+    <div class="mail-meta">
+      <div class="r"><span class="k">From</span><span class="v">PromotionPros &lt;quotes@promotionpros.com&gt;</span></div>
+      <div class="r"><span class="k">Reply-to</span><span class="v" id="mailReply">Terry Alvarez &lt;terry@promotionpros.com&gt;</span></div>
+      <div class="r"><span class="k">Subject</span><span class="v" id="mailSubj"></span></div>
+      <div class="r"><span class="k">Preheader</span><span class="v" id="mailPre"></span></div>
+    </div>
+    <div class="mail">
+      <div class="hd"><div class="logo">Promotion<i>Pros</i><small>Put your brand on it.</small></div></div>
+      <div class="pad">
+        <h1>Hi Dana,</h1>
+        <p class="lede" id="mailLede"></p>
+        <div class="rows" id="mailRows"></div>
+        <a class="btn" href="#">View quote online</a>
+        <p class="fine" id="mailValid"></p>
+        <div class="att"><span>&#128206;</span><span id="mailAtt">PromotionPros-Quote-Q-48310.pdf &mdash; attached, so you can forward it for approval.</span></div>
+        <div class="sig" id="mailSig"></div>
+      </div>
+      <div class="tfoot">You&rsquo;re getting this because you requested a quote at promotionpros.com.<br>PromotionPros &middot; 131 N Main St, West Bend, WI 53095 &middot; (844) 667-7666</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIEW 2 — QUOTE MODAL (over the PDP)
+     ============================================================ -->
+<div class="modal-back" id="backC" role="presentation">
+  <div class="modal" id="cDialog" role="dialog" aria-modal="true" aria-labelledby="cTitle" tabindex="-1">
+    <div class="modal-head">
+      <h2 id="cTitle">Your instant quote</h2>
+      <button class="modal-x" id="cX" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="mcard-top">
+          <img id="cThumb" alt="">
+          <span>
+            <span class="nm">10 Oz Stainless Wine Tumbler</span>
+            <button class="chg" id="cChange">Change</button>
+            <span class="chg-help">Changes are made on the product page.</span>
+          </span>
+        </div>
+        <p class="cfgline" id="cCfg"></p>
+        <div class="band amber" id="cDefault" hidden></div>
+        <div id="cPriceWrap">
+          <div class="mprice">
+            <span class="k">Subtotal with Setup Fee:</span>
+            <span><span class="v" id="cSub">$299.00</span><span class="e" id="cEach">Price each: $11.96</span></span>
+          </div>
+          <button class="brk-toggle" id="cBrkT" aria-expanded="false" aria-controls="cBrk">View Price Breakdown</button>
+          <div class="brk" id="cBrk" hidden></div>
+        </div>
+        <div class="spec-block" id="cSpecWrap" hidden>
+          <h3>This configuration needs a specialist</h3>
+          <p id="cSpecWhy">Quantities above 500 are priced by hand, so this one doesn&rsquo;t price instantly.</p>
+        </div>
+      </div>
+      <div class="mform">
+        <div class="fieldrow">
+          <label for="cName">Full name</label>
+          <input type="text" id="cName" autocomplete="name">
+          <span class="err" id="cNameErr" hidden>Enter the name for this quote</span>
+        </div>
+        <div class="fieldrow">
+          <label for="cEmail">Work email</label>
+          <input type="email" id="cEmail" autocomplete="email">
+          <span class="err" id="cEmailErr" hidden>Email addresses look like name@company.com</span>
+        </div>
+        <p class="privacy">Your details are used for this quote and your order. No marketing lists.</p>
+        <button class="mcta" id="cSubmit" disabled>Get my quote</button>
+        <p class="reason" id="cReason">Add your name and email to generate the quote.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="olark" id="olark">Contact Us<span class="tag">Olark widget placeholder</span></button>
+<div class="toast" id="toast" role="status" aria-live="polite">Link copied</div>
+<span class="sr" id="live" role="status" aria-live="polite"></span>
+
+<script>
+/* ============================================================
+   DATA — the 10 Oz Stainless Wine Tumbler, from the 2026-09-09
+   production capture. Prices, labels and locations are verbatim.
+   ============================================================ */
+var IMG = 'https://product-images.promotionpros.com/cloud-images-378/PINOT/cv-details-size/';
+var THUMB = 'https://product-images.promotionpros.com/cloud-images-378/PINOT/cv-thumb-size/';
+var IDS = ['638452299641900385','638452299641900499','638452299641900512','638452299641900521','638452299641900531','638452299641900545'];
+var SKU = 'GLD0001055', PROD = '10 Oz Stainless Wine Tumbler';
+var TIERS = [[25,11.96],[50,11.59],[150,11.25],[300,10.77],[500,10.34]];
+var MAX_TIER = 500;
+var COLORS = [['Blue','rgb(0,0,255)'],['Black','rgb(0,0,0)'],['Red','rgb(255,0,0)'],['Silver','rgb(192,192,192)'],['Graphite','rgb(111,116,119)'],['White','rgb(255,255,255)']];
+var METHODS = {
+  laser:{name:'Laser Engraved', colors:'Full Color', run:0,
+         note:'✓ First imprint included — full color, one location, no setup charge. Add locations below — extras are priced separately.'},
+  screen:{name:'Screen Printed', colors:'1 color', run:1.25, note:''}
+};
+var LOCS = ['Back','Front (small)','Front (large)','Two Sided','No Imprint'];
+var AREA = '1.75″W × 4.25″H';
+var RATES = [['FedEx Ground',18.40,'Tue, Sep 22, 2026'],['FedEx 2Day',52.90,'Thu, Sep 17, 2026'],['FedEx Standard Overnight',88.15,'Wed, Sep 16, 2026']];
+var QNO = 'Q-48310', ISSUED = 'Sep 9, 2026', VALID = 'Oct 9, 2026', GEN = 'Sep 9, 2026';
+var ORDERNO = 'W-10488', ORDERED_ON = 'Sep 12, 2026';
+var BUYER = {name:'Dana Whitfield', email:'dana@northlakeevents.com', co:'Northlake Events', phone:'(312) 555-0148', by:'Oct 2, 2026'};
+var REP = {name:'Terry Alvarez', ini:'TA', phone:'(844) 667-7666 ext. 214', email:'terry@promotionpros.com'};
+var PHONE = '(844) 667-7666';
+
+var S = {
+  view:'pdp', sample:true, cfgOpen:false, decSet:false, priceable:true,
+  color:0, qty:25, method:'laser', loc:'Back',
+  qState:'valid', delState:'off', rate:0, details:false, spec:'named', arrival:false,
+  submitted:false, prowOpen:false, quote:null
+};
+
+/* ---------- helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function usd(n){ return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function show(el,on){ if(!el) return; if(on) el.removeAttribute('hidden'); else el.setAttribute('hidden',''); }
+function unitFor(q){ var u = TIERS[0][1]; for (var i=0;i<TIERS.length;i++){ if (q >= TIERS[i][0]) u = TIERS[i][1]; } return u; }
+function tierBand(q){
+  for (var i=0;i<TIERS.length;i++){
+    var lo = TIERS[i][0], hi = (i+1<TIERS.length) ? TIERS[i+1][0]-1 : null;
+    if (q >= lo && (hi === null || q <= hi)){
+      var cur = (hi===null? lo+'+' : lo+'–'+hi) + ': ' + usd(TIERS[i][1]) + ' each';
+      if (i+1 < TIERS.length) return cur + ' · ' + TIERS[i+1][0] + '+: ' + usd(TIERS[i+1][1]) + ' each';
+      return cur;
+    }
+  }
+  return '';
+}
+function announce(m){ $('live').textContent = m; }
+function toast(m){ var t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(function(){t.classList.remove('on');},2600); }
+
+/* live price for the current PDP state */
+function price(st){
+  var m = METHODS[st.method], unit = unitFor(st.qty);
+  var noImp = st.loc === 'No Imprint';
+  var base = st.qty * unit;
+  var run = noImp ? 0 : st.qty * m.run;
+  var setup = 0;
+  var total = base + run + setup;
+  return {unit:unit, base:base, run:run, setup:setup, total:total, avg:total/st.qty, method:m, noImp:noImp};
+}
+function snapshot(st){
+  var p = price(st);
+  return {qty:st.qty, color:COLORS[st.color][0], method:st.method, methodName:p.method.name,
+          colorsLabel:p.noImp ? 'None' : p.method.colors, loc:st.loc, p:p};
+}
+function cfgSentence(q){
+  var bits = [q.color, q.qty + ' pieces', q.methodName];
+  if (q.loc !== 'No Imprint'){ bits.push(q.loc); bits.push(q.colorsLabel); } else { bits.push('No Imprint'); }
+  return bits.join(' · ');
+}
+function isSpecialist(){ return !S.priceable; }
+
+/* ============================================================
+   VIEW ROUTER
+   ============================================================ */
+var HELP = {
+  pdp:'<b>View 1 &middot; PDP.</b> A reproduction of the live wine-tumbler page. Two things are new: the sample row in the left column and the quote CTA under the orange button. Use the chips to switch the demonstrated states.',
+  modal:'<b>View 2 &middot; Quote modal.</b> 760px, two columns, zero controls, price before the fields. Esc or the backdrop closes it and keeps what you typed. Set &ldquo;Priceable: no&rdquo; on view 1 to see the specialist state.',
+  quote:'<b>View 3 &middot; Issued quote.</b> The forwardable document. The chips drive quote state, the delivery module, the details module, the specialist block and the first-arrival band.',
+  pdf:'<b>View 4 &middot; PDF.</b> A Letter-proportioned preview of the attachment, mirroring view 3&rsquo;s state. &ldquo;Print this now&rdquo; runs the real print stylesheet against view 3.',
+  email:'<b>View 5 &middot; Email.</b> Transactional, 600px, PDF attached.'
+};
+function go(v){
+  S.view = v;
+  var tabs = document.querySelectorAll('.proto-tab');
+  for (var i=0;i<tabs.length;i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-v') === v);
+  ['pdp','quote','pdf','email'].forEach(function(id){ $('view-'+id).classList.toggle('on', id === (v === 'modal' ? 'pdp' : v)); });
+  document.body.classList.toggle('qview', v === 'quote');
+  $('protoHelp').innerHTML = HELP[v];
+  if (v === 'modal'){ openModal(); } else { closeModal(true); }
+  window.scrollTo(0,0);
+  renderAll();
+}
+var tabs = document.querySelectorAll('.proto-tab');
+for (var ti=0; ti<tabs.length; ti++){ (function(b){ b.addEventListener('click', function(){ go(b.getAttribute('data-v')); }); })(tabs[ti]); }
+$('annToggle').addEventListener('click', function(){
+  var on = document.body.classList.toggle('show-ann');
+  this.classList.toggle('on', on);
+  this.textContent = 'Annotations: ' + (on ? 'on' : 'off');
+});
+
+/* ============================================================
+   VIEW 1 — PDP
+   ============================================================ */
+function renderGallery(){
+  $('galMain').src = IMG + IDS[0] + '.webp';
+  var h = '';
+  for (var i=0;i<IDS.length;i++) h += '<button class="'+(i===0?'on':'')+'" aria-label="Image '+(i+1)+'"><img src="'+THUMB+IDS[i]+'.webp" alt=""></button>';
+  $('galThumbs').innerHTML = h;
+  var bs = $('galThumbs').querySelectorAll('button');
+  for (var j=0;j<bs.length;j++) (function(b,k){ b.addEventListener('click', function(){
+    for (var n=0;n<bs.length;n++) bs[n].classList.remove('on');
+    b.classList.add('on'); $('galMain').src = IMG + IDS[k] + '.webp';
+  }); })(bs[j], j);
+}
+function renderSwatches(){
+  var h = '';
+  for (var i=0;i<COLORS.length;i++)
+    h += '<button class="swatch'+(i===S.color?' on':'')+'" role="radio" aria-checked="'+(i===S.color)+'" aria-label="'+COLORS[i][0]+'" data-i="'+i+'"><span style="background:'+COLORS[i][1]+'"></span></button>';
+  $('pdpSwatches').innerHTML = h;
+  $('pdpSwatches').setAttribute('role','radiogroup');
+  $('pdpSwatches').setAttribute('aria-label','Product color');
+  var bs = $('pdpSwatches').querySelectorAll('.swatch');
+  for (var j=0;j<bs.length;j++) (function(b){ b.addEventListener('click', function(){ S.color = +b.getAttribute('data-i'); renderAll(); }); })(bs[j]);
+}
+function renderTier(){
+  var r1 = '<tr><th>Minimum Quantity</th>', r2 = '<tr><th>Price per unit</th>';
+  for (var i=0;i<TIERS.length;i++){
+    var on = (S.qty >= TIERS[i][0] && (i+1 === TIERS.length || S.qty < TIERS[i+1][0])) ? ' class="on"' : '';
+    r1 += '<td'+on+'><button data-q="'+TIERS[i][0]+'">'+TIERS[i][0]+'</button></td>';
+    r2 += '<td'+on+'><button data-q="'+TIERS[i][0]+'">'+usd(TIERS[i][1])+'</button></td>';
+  }
+  $('tierTable').querySelector('tbody').innerHTML = r1+'</tr>'+r2+'</tr>';
+  var bs = $('tierTable').querySelectorAll('button');
+  for (var j=0;j<bs.length;j++) (function(b){ b.addEventListener('click', function(){ S.qty = +b.getAttribute('data-q'); S.priceable = true; setChip('chipPriceOk',['chipPriceOk','chipPriceQty']); renderAll(); }); })(bs[j]);
+  var w = $('tierTable').parentNode;
+  show($('tierCue'), w.scrollWidth > w.clientWidth + 2);
+}
+function renderPDP(){
+  $('colorName').textContent = COLORS[S.color][0];
+  $('recapColor').textContent = COLORS[S.color][0];
+  $('recapQty').textContent = S.qty;
+  $('qtyIn').value = S.qty;
+  var p = price(S);
+  $('unitIn').value = usd(p.unit);
+  $('pdpSubtotal').textContent = usd(p.total);
+  $('pdpEach').textContent = 'Price each: ' + usd(p.unit);
+  show($('stepsTop'), !S.cfgOpen);
+  show($('stepsWizard'), S.cfgOpen);
+  $('ctaPrimary').textContent = S.cfgOpen ? 'Add to Cart' : 'Customize Your Product';
+  $('methLaser').classList.toggle('on', S.method === 'laser');
+  $('methLaser').setAttribute('aria-pressed', S.method === 'laser');
+  $('methScreen').classList.toggle('on', S.method === 'screen');
+  $('methScreen').setAttribute('aria-pressed', S.method === 'screen');
+  $('methNote').textContent = METHODS[S.method].note;
+  show($('methNote'), !!METHODS[S.method].note);
+  $('locSel').value = S.loc;
+  $('roColors').textContent = p.noImp ? 'None' : METHODS[S.method].colors;
+  $('roCost').textContent = p.run ? usd(p.run) : 'Free';
+  show($('sampleRow'), S.sample);
+  var blocked = S.loc === '';
+  $('quoteCta').disabled = blocked;
+  $('quoteHelp').textContent = blocked
+    ? 'Choose an imprint location to continue.'
+    : 'Priced now, good for 30 days. No call, no waiting.';
+  renderTier();
+}
+function setChip(onId, group){ group.forEach(function(id){ $(id).classList.toggle('on', id === onId); }); }
+$('chipSampleYes').addEventListener('click', function(){ S.sample = true; setChip('chipSampleYes',['chipSampleYes','chipSampleNo']); renderAll(); });
+$('chipSampleNo').addEventListener('click', function(){ S.sample = false; setChip('chipSampleNo',['chipSampleYes','chipSampleNo']); renderAll(); });
+$('chipCfgClosed').addEventListener('click', function(){ S.cfgOpen = false; setChip('chipCfgClosed',['chipCfgClosed','chipCfgOpen']); renderAll(); });
+$('chipCfgOpen').addEventListener('click', function(){ S.cfgOpen = true; setChip('chipCfgOpen',['chipCfgClosed','chipCfgOpen']); renderAll(); });
+$('chipDecDefault').addEventListener('click', function(){ S.decSet = false; S.method='laser'; S.loc='Back'; setChip('chipDecDefault',['chipDecDefault','chipDecSet']); renderAll(); });
+$('chipDecSet').addEventListener('click', function(){ S.decSet = true; S.method='screen'; S.loc='Back'; setChip('chipDecSet',['chipDecDefault','chipDecSet']); renderAll(); });
+$('chipPriceOk').addEventListener('click', function(){ S.priceable = true; S.qty = 25; setChip('chipPriceOk',['chipPriceOk','chipPriceQty']); renderAll(); });
+$('chipPriceQty').addEventListener('click', function(){ S.priceable = false; S.qty = 2500; setChip('chipPriceQty',['chipPriceOk','chipPriceQty']); renderAll(); });
+$('ctaPrimary').addEventListener('click', function(){ if (!S.cfgOpen){ S.cfgOpen = true; setChip('chipCfgOpen',['chipCfgClosed','chipCfgOpen']); renderAll(); } });
+$('recapEdit').addEventListener('click', function(){ S.cfgOpen = false; setChip('chipCfgClosed',['chipCfgClosed','chipCfgOpen']); renderAll(); });
+$('methLaser').addEventListener('click', function(){ S.method='laser'; S.loc='Back'; S.decSet=true; setChip('chipDecSet',['chipDecDefault','chipDecSet']); renderAll(); announce('Laser Engraved resets the imprint location to Back.'); });
+$('methScreen').addEventListener('click', function(){ S.method='screen'; S.loc='Back'; S.decSet=true; setChip('chipDecSet',['chipDecDefault','chipDecSet']); renderAll(); announce('Screen Printed resets the imprint location to Back.'); });
+$('locSel').addEventListener('change', function(){ S.loc = this.value; S.decSet = true; setChip('chipDecSet',['chipDecDefault','chipDecSet']); renderAll(); });
+$('qtyIn').addEventListener('change', function(){ var v = parseInt(this.value,10); if (!isNaN(v) && v>0){ S.qty = v; S.priceable = v <= MAX_TIER; setChip(S.priceable?'chipPriceOk':'chipPriceQty',['chipPriceOk','chipPriceQty']); } renderAll(); });
+$('pdpBrk').addEventListener('click', function(){ toast('Production opens the Price breakdown dialog here.'); });
+$('sampleRow').addEventListener('click', function(){ toast('Opens the existing sample flow — out of scope this round.'); });
+$('olark').addEventListener('click', function(){ toast('Olark chat widget placeholder.'); });
+$('cookieOk').addEventListener('click', function(){ $('cookieBar').style.display = 'none'; });
+
+/* ============================================================
+   VIEW 2 — MODAL
+   ============================================================ */
+var openC = false, lastFocus = null;
+function renderModal(){
+  var q = snapshot(S), p = q.p;
+  $('cThumb').src = THUMB + IDS[0] + '.webp';
+  $('cCfg').textContent = cfgSentence(q);
+  var showDefault = !S.decSet;
+  $('cDefault').innerHTML = 'This quote prices the default decoration: <b>' + esc(METHODS.laser.name) + ', Back, full color</b>. Change it on the product page.';
+  show($('cDefault'), showDefault && !isSpecialist());
+  show($('cPriceWrap'), !isSpecialist());
+  show($('cSpecWrap'), isSpecialist());
+  $('cSpecWhy').textContent = 'Quantities above ' + MAX_TIER + ' are priced by hand, so this one doesn’t price instantly.';
+  $('cSub').textContent = usd(p.total);
+  $('cEach').textContent = 'Price each: ' + usd(p.unit);
+  $('cBrk').innerHTML = breakdownHTML(q);
+  var ok = contactValid();
+  $('cSubmit').disabled = !ok;
+  $('cSubmit').textContent = isSpecialist() ? 'Request a specialist quote' : 'Get my quote';
+  $('cReason').textContent = !ok
+    ? 'Add your name and email to generate the quote.'
+    : (isSpecialist() ? 'A specialist sends your quote by Thu, Sep 10, 2026.' : 'Locked for 30 days, through ' + VALID + '.');
+}
+function breakdownHTML(q){
+  var p = q.p, h = '';
+  h += '<div class="r"><span>Base Item Price</span><span>' + q.qty + ' × ' + usd(p.unit) + ' = ' + usd(p.base) + '</span></div>';
+  h += '<div class="r lab"><span>Decoration method: ' + esc(q.methodName) + '</span><span></span></div>';
+  if (!p.noImp) h += '<div class="r lab"><span>Imprint 1 — ' + esc(q.loc) + ', ' + esc(q.colorsLabel.toLowerCase()) + ' ' + esc(q.methodName) + '</span><span></span></div>';
+  h += '<div class="r"><span>Imprint Method Setup</span><span>Free</span></div>';
+  h += '<div class="r"><span>Imprint Method Run Charge</span><span>' + (p.run ? q.qty + ' × ' + usd(p.method.run) + ' = ' + usd(p.run) : 'Free') + '</span></div>';
+  h += '<div class="r tot"><span>Total Price</span><span>' + usd(p.total) + '</span></div>';
+  h += '<div class="r"><span>Average price per unit</span><span>' + usd(p.avg) + ' per unit</span></div>';
+  h += '<p class="fn">Taxes and delivery costs are not included. They will be calculated at checkout.</p>';
+  return h;
+}
+function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }
+function contactValid(){ return $('cName').value.trim() !== '' && emailOk($('cEmail').value); }
+function openModal(){
+  if (openC) return;
+  lastFocus = document.activeElement;
+  openC = true;
+  renderModal();
+  $('backC').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelector('#view-pdp .pdp-grid').setAttribute('aria-hidden','true');
+  setTimeout(function(){ $('cDialog').focus(); }, 30);
+}
+function closeModal(silent){
+  if (!openC) return;
+  openC = false;
+  $('backC').classList.remove('open');
+  document.body.style.overflow = '';
+  document.querySelector('#view-pdp .pdp-grid').removeAttribute('aria-hidden');
+  if (!silent && lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function dismiss(){ var was = S.view; closeModal(); if (was === 'modal') go('pdp'); }
+$('quoteCta').addEventListener('click', function(){ S.view = 'modal'; $('protoHelp').innerHTML = HELP.modal;
+  var t = document.querySelectorAll('.proto-tab'); for (var i=0;i<t.length;i++) t[i].classList.toggle('on', t[i].getAttribute('data-v')==='modal');
+  openModal(); });
+$('cX').addEventListener('click', dismiss);
+$('backC').addEventListener('mousedown', function(e){ if (e.target === this) dismiss(); });
+$('cChange').addEventListener('click', function(){
+  closeModal(); go('pdp');
+  S.cfgOpen = true; setChip('chipCfgOpen',['chipCfgClosed','chipCfgOpen']); renderAll();
+  var el = $('stepsWizard');
+  el.scrollIntoView({block:'center'});
+  el.style.outline = '2px solid var(--orange)'; el.style.outlineOffset = '8px';
+  setTimeout(function(){ el.style.outline = ''; }, 2000);
+});
+$('cBrkT').addEventListener('click', function(){
+  var open = $('cBrk').hasAttribute('hidden');
+  show($('cBrk'), open); this.setAttribute('aria-expanded', open);
+});
+['cName','cEmail'].forEach(function(id){
+  $(id).addEventListener('input', renderModal);
+  $(id).addEventListener('blur', function(){
+    var bad = id === 'cName' ? this.value.trim() === '' : !emailOk(this.value);
+    if (this.value === '') bad = id === 'cName' ? true : true;
+    this.setAttribute('aria-invalid', bad);
+    show($(id + 'Err'), bad);
+  });
+});
+$('cSubmit').addEventListener('click', function(){
+  if (this.disabled) return;
+  this.disabled = true;
+  S.quote = snapshot(S);
+  S.arrival = true; $('chipArrival').classList.add('on');
+  S.qState = 'valid'; setQs('valid');
+  closeModal(true); go('quote');
+});
+document.addEventListener('keydown', function(e){
+  if (!openC) return;
+  if (e.key === 'Escape'){ dismiss(); return; }
+  if (e.key === 'Tab'){
+    var f = $('backC').querySelectorAll('button, input, a[href], [tabindex="-1"]'), list = [];
+    for (var i=0;i<f.length;i++){ if (!f[i].disabled && f[i].offsetParent !== null) list.push(f[i]); }
+    if (!list.length) return;
+    var first = list[0], last = list[list.length-1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+});
+
+/* ============================================================
+   VIEW 3 — ISSUED QUOTE
+   ============================================================ */
+function chosenRate(){ return (S.delState === 'chosen') ? RATES[S.rate] : null; }
+function qTotal(){ var r = chosenRate(); return S.quote.p.total + (r ? r[1] : 0); }
+function qTerms(){
+  var q = S.quote;
+  var scope = q.loc === 'No Imprint'
+    ? 'Pricing covers the blank product with no imprint.'
+    : 'Pricing covers ' + q.methodName.toLowerCase() + ' on the ' + q.loc + ' location in ' + q.colorsLabel.toLowerCase() + ', with one artwork setup. Extra locations, extra colors, and Pantone/PMS color matching are priced separately.';
+  return [
+    'Valid through ' + VALID + '. The price above is honored at checkout until that date.',
+    'Prices are in US dollars and exclude sales tax, which is added at checkout where applicable.',
+    scope,
+    'Artwork is uploaded at checkout. A free digital proof follows within 1 business day, and production starts after you approve it.',
+    'Quantities may ship up to 5% over or under, and are billed as shipped.',
+    'After ' + VALID + ', pricing reflects supplier and tariff costs in effect at the time of order.'
+  ];
+}
+function cfgListHTML(q){
+  var rows = [['Product color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration Method', q.methodName]];
+  if (q.loc !== 'No Imprint'){
+    rows.push(['Imprint location', q.loc]);
+    rows.push(['Imprint colors', q.colorsLabel]);
+    rows.push(['Imprint area', AREA]);
+  } else { rows.push(['Imprint', 'No Imprint']); }
+  rows.push(['Pantone/PMS color match', 'Not requested']);
+  var h = '';
+  for (var i=0;i<rows.length;i++)
+    h += '<li><span class="ck">✓</span><span><span class="k">' + esc(rows[i][0]) + '</span> &mdash; <span class="v">' + esc(rows[i][1]) + '</span></span></li>';
+  return h;
+}
+function ptabRowHTML(q){
+  var p = q.p;
+  return '<td data-l="Qty">' + q.qty + '</td><td data-l="Run charge">' + (p.run ? usd(p.run) : 'Free') +
+         '</td><td data-l="Setup">Free</td><td data-l="Price per item">' + usd(p.unit) +
+         '</td><td data-l="Total Price"><b>' + usd(p.total) + '</b></td>';
+}
+function setQs(v){
+  S.qState = v;
+  var cs = document.querySelectorAll('[data-qs]');
+  for (var i=0;i<cs.length;i++) cs[i].classList.toggle('on', cs[i].getAttribute('data-qs') === v);
+}
+function setDs(v){
+  S.delState = v;
+  var cs = document.querySelectorAll('[data-ds]');
+  for (var i=0;i<cs.length;i++) cs[i].classList.toggle('on', cs[i].getAttribute('data-ds') === v);
+}
+function renderRates(){
+  var h = '';
+  for (var i=0;i<RATES.length;i++)
+    h += '<label class="rate"><input type="radio" name="rate" value="'+i+'"'+(i===S.rate?' checked':'')+'>' +
+         '<span><span class="nm">'+RATES[i][0]+'</span><span class="dt">Arrives by '+RATES[i][2]+'</span></span>' +
+         '<span class="cost">'+usd(RATES[i][1])+'</span></label>';
+  $('rateList').innerHTML = h;
+  var rs = $('rateList').querySelectorAll('input');
+  for (var j=0;j<rs.length;j++){
+    (function(r){
+      function pick(){ S.rate = +r.value; setDs('chosen'); renderAll(); announce('Delivery selected. New total ' + usd(qTotal()) + '.'); }
+      r.addEventListener('change', pick);
+      r.addEventListener('click', pick);
+    })(rs[j]);
+  }
+}
+function renderQuote(){
+  var q = S.quote, p = q.p, st = S.qState;
+  show($('qDoc'), st !== 'invalid');
+  show($('qInvalid'), st === 'invalid');
+  show($('mobBar'), st !== 'invalid');
+  show($('qArrival'), S.arrival && st === 'valid');
+
+  $('lhFor').innerHTML = '<b>' + esc(BUYER.name) + '</b><br>' + (S.details ? esc(BUYER.co) + '<br>' : '') + esc(BUYER.email) + (S.details ? '<br>' + esc(BUYER.phone) : '');
+  $('lhMeta').innerHTML = '<b>' + QNO + '</b><br>Issued ' + ISSUED + '<br>Valid through ' + VALID;
+  $('qH1').textContent = 'Quote ' + QNO;
+
+  var chip = $('qChip');
+  chip.className = 'st-chip ' + ({valid:'valid', expiring:'exp', expired:'dead', ordered:'ord'}[st] || 'valid');
+  chip.textContent = {valid:'Valid', expiring:'Expires in 4 days', expired:'Expired', ordered:'Ordered ' + ORDERNO}[st] || 'Valid';
+  $('qDoc').classList.toggle('expired', st === 'expired');
+  show($('qWm'), st === 'expired');
+  $('qWmTxt').textContent = 'Expired ' + VALID;
+
+  $('qThumb').src = THUMB + IDS[0] + '.webp';
+  $('qProdName').innerHTML = '#' + SKU + ' &ndash; ' + esc(PROD);
+  $('qCfgLine').textContent = cfgSentence(q);
+  $('qRowSub').textContent = usd(p.total);
+  $('qCfgList').innerHTML = cfgListHTML(q);
+  $('qPtabRow').innerHTML = ptabRowHTML(q);
+  $('qTierBand').innerHTML = 'Quantity break: <b>' + tierBand(q.qty) + '</b>';
+  show($('prowBody'), S.prowOpen);
+  $('prowHead').setAttribute('aria-expanded', S.prowOpen);
+  $('prowChev').innerHTML = S.prowOpen ? '&#9650;' : '&#9660;';
+
+  $('tSub').textContent = usd(p.total);
+  var r = chosenRate();
+  if (r){ $('tShip').innerHTML = esc(r[0]) + ' &mdash; ' + usd(r[1]) + '<small>Arrives by ' + r[2] + '</small>'; }
+  else { $('tShip').innerHTML = '<span style="font-weight:400;color:var(--body)">calculated at checkout</span> &nbsp;<button class="calc" id="calcNow">Calculate now</button>'; }
+  if ($('calcNow')) $('calcNow').addEventListener('click', function(){
+    $('delChk').checked = true; setDs('addr'); renderAll();
+    var el = $('delIn'); el.scrollIntoView({block:'center'}); $('delStreet').focus();
+  });
+  $('flagLabel').textContent = r ? 'Total with delivery' : 'Total Price';
+  $('flagValue').textContent = usd(qTotal());
+  $('flagCaption').innerHTML = st === 'expired'
+    ? 'Prices as of ' + ISSUED
+    : 'Average price per unit ' + usd(p.avg) + (r ? ', before delivery' : '');
+  $('mobK').textContent = r ? 'Total with delivery' : 'Total Price';
+  $('mobV').textContent = usd(qTotal());
+
+  var cta = $('qCta'), help = $('qCtaHelp'), mob = $('mobGo');
+  cta.classList.remove('ghost');
+  if (st === 'expired'){ cta.textContent = 'Get an updated quote'; help.textContent = 'Same configuration, priced today, with a new quote number.'; mob.textContent = 'Get an updated quote'; }
+  else if (st === 'ordered'){ cta.textContent = 'View order ' + ORDERNO; cta.classList.add('ghost'); help.textContent = 'Ordered on ' + ORDERED_ON + '.'; mob.textContent = 'View order'; }
+  else { cta.textContent = 'Order this quote'; help.textContent = 'Restores this exact configuration at the quoted price.'; mob.textContent = 'Order this quote'; }
+
+  $('qValidity').textContent = {
+    valid: 'This quote is good through ' + VALID + '. The price is honored at checkout until then.',
+    expiring: 'This quote expires in 4 days, on ' + VALID + '. Order before then to keep this price.',
+    expired: 'This quote expired on ' + VALID + '. Pricing may have changed — get an updated quote with the same configuration.',
+    ordered: 'Ordered on ' + ORDERED_ON + ' as order ' + ORDERNO + '.'
+  }[st] || '';
+
+  var rev = [];
+  if (chosenRate()) rev.push('Delivery added Sep 9, 2026');
+  if (S.details) rev.push('Details added Sep 9, 2026');
+  show($('qRev'), rev.length > 0);
+  if (rev.length) $('qRev').textContent = 'Revised Sep 9, 2026 · ' + rev.join(' · ') + '. The quote number and the quoted goods price are unchanged.';
+
+  $('delChk').checked = S.delState !== 'off';
+  show($('delIn'), S.delState !== 'off');
+  show($('delAddr'), S.delState === 'addr' || S.delState === 'empty');
+  show($('delOpts'), S.delState === 'opts' || S.delState === 'chosen');
+  show($('delEmpty'), S.delState === 'empty');
+
+  $('detToggle').textContent = S.details ? 'Edit company, phone or need-by date' : 'Add company, phone or need-by date';
+  $('detSummary').textContent = S.details
+    ? BUYER.name + ' · ' + BUYER.email + ' · ' + BUYER.co + ' · ' + BUYER.phone + ' · needed by ' + BUYER.by
+    : BUYER.name + ' · ' + BUYER.email;
+
+  if (S.spec === 'named'){
+    $('specPh').textContent = REP.ini;
+    $('specWho').textContent = REP.name;
+    $('specBody').innerHTML = REP.phone + ' &middot; ' + REP.email + '<br>Replies by the next business day, quoting ' + QNO + '.';
+  } else {
+    $('specPh').textContent = 'PP';
+    $('specWho').textContent = 'Talk to a specialist';
+    $('specBody').innerHTML = 'Call ' + PHONE + ', Monday to Friday, 8 am to 5 pm Central.<br>Replies by the next business day, quoting ' + QNO + '.';
+  }
+  var th = ''; qTerms().forEach(function(t){ th += '<li>' + esc(t) + '</li>'; });
+  $('qTerms').innerHTML = th;
+  $('qGenLine').textContent = 'Generated ' + GEN + ' · promotionpros.com/q/48310';
+  renderRates();
+}
+$('prowHead').addEventListener('click', function(){ S.prowOpen = !S.prowOpen; renderQuote(); });
+$('delChk').addEventListener('change', function(){ setDs(this.checked ? 'addr' : 'off'); renderAll(); });
+$('delGo').addEventListener('click', function(){ setDs('opts'); renderAll(); announce('Delivery options ready.'); });
+$('delChange').addEventListener('click', function(){ setDs('addr'); renderAll(); });
+$('detToggle').addEventListener('click', function(){ var open = $('detIn').hasAttribute('hidden'); show($('detIn'), open); });
+$('detSave').addEventListener('click', function(){ S.details = true; $('chipDetails').classList.add('on'); show($('detIn'), false); renderAll(); toast('Details added to quote ' + QNO); });
+$('specBtn').addEventListener('click', function(){ toast('Opens a message prefilled with “I have a question about quote ' + QNO + '.”'); });
+$('actShare').addEventListener('click', function(){ toast('Link copied'); });
+$('actPrint').addEventListener('click', function(){ window.print(); });
+$('actPdf').addEventListener('click', function(){ go('pdf'); });
+$('mobGo').addEventListener('click', function(){ toast('Restores this configuration in the cart at the quoted price.'); });
+$('qCta').addEventListener('click', function(){ toast('Restores this configuration in the cart at the quoted price.'); });
+var qsc = document.querySelectorAll('[data-qs]');
+for (var a=0;a<qsc.length;a++) (function(b){ b.addEventListener('click', function(){ setQs(b.getAttribute('data-qs')); renderAll(); }); })(qsc[a]);
+var dsc = document.querySelectorAll('[data-ds]');
+for (var b2=0;b2<dsc.length;b2++) (function(b){ b.addEventListener('click', function(){ setDs(b.getAttribute('data-ds')); renderAll(); }); })(dsc[b2]);
+$('chipDetails').addEventListener('click', function(){ S.details = !S.details; this.classList.toggle('on', S.details); renderAll(); });
+$('chipSpecNamed').addEventListener('click', function(){ S.spec = 'named'; setChip('chipSpecNamed',['chipSpecNamed','chipSpecLine']); renderAll(); });
+$('chipSpecLine').addEventListener('click', function(){ S.spec = 'line'; setChip('chipSpecLine',['chipSpecNamed','chipSpecLine']); renderAll(); });
+$('chipArrival').addEventListener('click', function(){ S.arrival = !S.arrival; this.classList.toggle('on', S.arrival); renderAll(); });
+
+/* ============================================================
+   VIEW 4 — PDF SHEET
+   ============================================================ */
+function renderSheet(){
+  var q = S.quote, p = q.p, r = chosenRate();
+  $('sheetRun').innerHTML = 'Quote ' + QNO + ' &middot; PromotionPros';
+  $('sheetFor').innerHTML = '<b>' + esc(BUYER.name) + '</b><br>' + (S.details ? esc(BUYER.co) + '<br>' : '') + esc(BUYER.email) + (S.details ? '<br>' + esc(BUYER.phone) : '');
+  $('sheetMeta').innerHTML = '<b>' + QNO + '</b><br>Issued ' + ISSUED + '<br>Valid through ' + VALID;
+  $('sheetImg').src = IMG + IDS[0] + '.webp';
+  $('sheetName').innerHTML = '#' + SKU + ' &ndash; ' + esc(PROD);
+  $('sheetCfg').innerHTML = cfgListHTML(q);
+  $('sheetPtab').innerHTML = ptabRowHTML(q);
+  var t = '<div class="trow"><span class="k">Subtotal with Setup Fee:</span><span class="v">' + usd(p.total) + '</span></div>';
+  t += '<div class="trow"><span class="k">Delivery</span><span class="v">' + (r ? esc(r[0]) + ' &mdash; ' + usd(r[1]) + '<small>Arrives by ' + r[2] + '</small>' : '<span style="font-weight:400">calculated at checkout</span>') + '</span></div>';
+  t += '<div class="trow"><span class="k">Sales tax</span><span class="v" style="font-weight:400">added at checkout where applicable</span></div>';
+  if (S.details) t += '<div class="trow"><span class="k">Needed by</span><span class="v">' + BUYER.by + '</span></div>';
+  $('sheetTotals').innerHTML = t;
+  $('sheetFlagK').textContent = r ? 'Total with delivery' : 'Total Price';
+  $('sheetFlagV').textContent = usd(qTotal());
+  $('sheetFlagC').textContent = S.qState === 'expired' ? 'Prices as of ' + ISSUED
+    : 'Average price per unit ' + usd(p.avg) + (r ? ', before delivery' : '');
+  $('sheetSpec').innerHTML = S.spec === 'named'
+    ? '<b>' + REP.name + '</b> &middot; ' + REP.phone + ' &middot; ' + REP.email
+    : '<b>PromotionPros sales</b> &middot; ' + PHONE + ' &middot; info@promotionpros.com';
+  var th = ''; qTerms().forEach(function(x){ th += '<li>' + esc(x) + '</li>'; });
+  $('sheetTerms').innerHTML = th;
+  $('sheetGen').textContent = 'Generated ' + GEN;
+  var pages = Math.max(1, Math.ceil($('sheet').scrollHeight / 1056));
+  $('sheet').nextSibling;
+  document.querySelector('#sheet .run span:last-child').textContent = 'Page 1 of ' + pages;
+  show($('sheetWm'), S.qState === 'expired');
+  $('sheetWmTxt').textContent = 'Expired ' + VALID;
+}
+$('pdfPrint').addEventListener('click', function(){ window.print(); });
+
+/* ============================================================
+   VIEW 5 — EMAIL
+   ============================================================ */
+function renderMail(){
+  var q = S.quote, p = q.p, r = chosenRate();
+  var updated = (r || S.details) ? 'Updated: ' : '';
+  $('mailSubj').textContent = updated + 'Your PromotionPros quote #' + QNO + ': ' + PROD + ', ' + q.qty + ' pieces';
+  $('mailPre').textContent = 'Total ' + usd(qTotal()) + ', valid through ' + VALID + '. PDF attached.';
+  $('mailLede').textContent = 'Here’s your quote for ' + q.qty + ' ' + PROD + 's, ' +
+    (q.loc === 'No Imprint' ? 'with no imprint.' : q.methodName.toLowerCase() + ' in ' + q.colorsLabel.toLowerCase() + ' on the ' + q.loc + ' location.');
+  var rows = [
+    ['Quote', QNO],
+    ['Product', '#' + SKU + ' – ' + PROD],
+    ['Quantity', q.qty + ' pieces'],
+    ['Decoration method', q.methodName],
+    ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : q.loc + ' · ' + q.colorsLabel],
+    ['Delivery', r ? r[0] + ' — ' + usd(r[1]) + ' · Arrives by ' + r[2] : 'Calculated at checkout'],
+    ['Total', usd(qTotal())],
+    ['Valid through', VALID]
+  ];
+  var h = '';
+  for (var i=0;i<rows.length;i++) h += '<div class="r"><span class="k">' + esc(rows[i][0]) + '</span><span class="v">' + esc(rows[i][1]) + '</span></div>';
+  $('mailRows').innerHTML = h;
+  $('mailValid').textContent = 'This price is honored at checkout through ' + VALID + '.';
+  $('mailAtt').textContent = 'PromotionPros-Quote-' + QNO + '.pdf — attached, so you can forward it for approval.';
+  $('mailSig').innerHTML = S.spec === 'named'
+    ? REP.name + '<br>PromotionPros &middot; ' + REP.phone + '<br>' + REP.email
+    : 'PromotionPros sales<br>' + PHONE + '<br>info@promotionpros.com';
+  $('mailReply').textContent = S.spec === 'named'
+    ? REP.name + ' <' + REP.email + '>'
+    : 'PromotionPros sales <info@promotionpros.com>';
+}
+
+/* ============================================================
+   RENDER + MEASUREMENTS
+   ============================================================ */
+function renderAll(){
+  renderPDP();
+  if (openC) renderModal();
+  renderQuote();
+  renderSheet();
+  renderMail();
+  measure();
+}
+window.__measure = function(){
+  var m = {};
+  var qc = $('quoteCta').getBoundingClientRect();
+  var chrome = document.querySelector('.proto-bar').offsetHeight + $('protoHelp').offsetHeight + document.querySelector('#view-pdp .chipdeck').offsetHeight;
+  m.quoteCtaDocY = Math.round(qc.top + window.scrollY);
+  m.quoteCtaMinusChrome = Math.round(qc.top + window.scrollY - chrome);
+  m.orangeCtaDocY = Math.round($('ctaPrimary').getBoundingClientRect().top + window.scrollY);
+  m.viewportH = window.innerHeight;
+  m.modalH = openC ? Math.round($('cDialog').getBoundingClientRect().height) : null;
+  m.bodyScrollWhileModal = openC ? (document.documentElement.scrollHeight > window.innerHeight) : null;
+  m.docScrollW = document.documentElement.scrollWidth;
+  m.clientW = document.documentElement.clientWidth;
+  m.overflowX = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+  return m;
+};
+function measure(){
+  if (S.view !== 'pdp' && S.view !== 'modal'){
+    var e0 = $('protoHelp').querySelector('.mnum'); if (e0) e0.innerHTML = '';
+    return;
+  }
+  var m = window.__measure();
+  var el = $('protoHelp');
+  if (!el.querySelector('.mnum')){ var s = document.createElement('span'); s.className='mnum'; el.appendChild(s); }
+  el.querySelector('.mnum').innerHTML = ' &nbsp;<b>[measured]</b> quote CTA y ' + m.quoteCtaDocY +
+    'px (' + m.quoteCtaMinusChrome + 'px without prototype chrome) &middot; overflow-x ' + m.overflowX + 'px' +
+    (m.modalH ? ' &middot; modal ' + m.modalH + 'px' : '');
+}
+window.addEventListener('resize', measure);
+
+/* ---------- boot ---------- */
+renderGallery();
+renderSwatches();
+/* the issued quote opens on a snapshot of the configured state, so views 3-5
+   are meaningful before anyone submits the modal */
+S.quote = snapshot({qty:25, color:0, method:'screen', loc:'Back'});
+$('protoHelp').innerHTML = HELP.pdp;
+renderAll();
+</script>
+</body>
+</html>

@@ -1007,7 +1007,7 @@ body.show-ann .ann-list{display:block}
                 </fieldset>
                 <p class="reason" id="delFoot">Arrival dates include 5 business days of production after you approve your proof</p>
               </div>
-              <div class="band amber" id="delEmpty" hidden>No rates came back for that ZIP code. Check the address, or leave it blank and we&rsquo;ll price shipping and sales tax at checkout.</div>
+              <div class="band amber" id="delEmpty" hidden></div>
             </div>
             <!-- item 7: a way back to the number this module just changed. -->
             <button class="btn-mini" id="delBack" style="margin-top:16px">Back to quote summary</button>
@@ -1268,11 +1268,11 @@ var RATES = [
 ];
 var CHEAPEST = 0, EARLIEST = 2;
 /* From the 2026-09-09 wine-tumbler capture, Production & Shipping accordion. */
-var PROOF_LINE = 'Free digital proof &mdash; typically within 24 hours';
+var PROOF_LINE = 'Free digital proof &mdash; typically within 24 hours.';
 var PROD_DAYS = 5;
-var PROD_LINE = 'Production: approximately 5 business days after proof approval';
-var CUTOFF = 'if ordered today before 12 PM CT';
-var DELIV_FN = 'Estimated, continental US, ' + CUTOFF;
+var PROD_LINE = 'Production: approximately 5 business days after proof approval.';
+var CUTOFF = 'if ordered today before 12 p.m. Central';
+var DELIV_FN = 'Estimated for the continental US ' + CUTOFF;
 /* Mock destination rate for Chicago 60606. Source is an assumption, not a
    tax service - see the Boris asks in notes.md. */
 var TAX_RATE = 0.1025;
@@ -1331,14 +1331,14 @@ function snapshot(st){
 }
 function cfgSentence(q){
   if (q.loc === 'No Imprint') return [q.color, q.qty + ' pieces', 'No Imprint'].join(' · ');
-  return [q.color, q.qty + ' pieces', q.methodName + ' on ' + q.loc].join(' · ');
+  return [q.color, q.qty + ' pieces', q.methodName + ' on ' + q.loc, inkValue(q)].join(' · ');
 }
-/* item 2 - Laser Engraved removes material; it has no ink, so it never prints an
-   ink-colour count. Screen Printed keeps production's own Imprint Colors value. */
+/* Ruling (c) - Laser Engraved removes material, so it has no ink colour on any
+   surface. One helper feeds every string that names one. */
+function inkValue(q){ return q.method === 'laser' ? 'No ink' : q.colorsLabel; }
 function inkRow(q){
   if (q.loc === 'No Imprint') return null;
-  if (q.method === 'laser') return ['Imprint colors', 'Engraved, no ink color'];
-  return ['Imprint colors', q.colorsLabel];
+  return ['Imprint Colors', inkValue(q)];
 }
 function rowsHTML(rows){
   var h = '';
@@ -1350,7 +1350,7 @@ function rowsHTML(rows){
 }
 /* item 2 - the modal reads one fact per row: colour, quantity, then decoration. */
 function modalCfgHTML(q){
-  var rows = [['Color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration method', q.methodName]];
+  var rows = [['Color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration Method', q.methodName]];
   if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); }
   else { rows.push(['Location', q.loc]); rows.push(inkRow(q)); }
   return rowsHTML(rows);
@@ -1361,8 +1361,8 @@ function colProdHTML(q){ return rowsHTML([['Color', q.color], ['Quantity', q.qty
 function colDecHTML(q){
   var rows = [['Method', q.methodName]];
   if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); return rowsHTML(rows); }
-  rows.push(['Location', q.loc + ' · ' + AREA]);
-  if (q.method !== 'laser') rows.push(['Imprint colors', q.colorsLabel]);
+  rows.push(['Location', q.loc + ' ' + AREA]);
+  if (q.method !== 'laser') rows.push(['Imprint Colors', q.colorsLabel]);
   return rowsHTML(rows);
 }
 /* item 4 - production time and the two arrival bookends, from this product's
@@ -1510,7 +1510,7 @@ function renderModal(){
   $('cThumb').src = THUMB + IDS[0] + '.webp';
   $('cCfg').innerHTML = modalCfgHTML(q);
   var showDefault = !S.decSet;
-  $('cDefault').innerHTML = 'This quote prices the default decoration: <b>' + esc(METHODS.laser.name) + ' on Back, full color</b>. Change it on the product page.';
+  $('cDefault').innerHTML = 'This quote prices the default decoration: <b>' + esc(METHODS.laser.name) + ' on Back, no ink</b>. Change it on the product page.';
   show($('cDefault'), showDefault && !isSpecialist());
   show($('cPriceWrap'), !isSpecialist());
   show($('cSpecWrap'), isSpecialist());
@@ -1530,7 +1530,8 @@ function breakdownHTML(q){
   var p = q.p, h = '';
   h += '<div class="r"><span>Base Item Price</span><span>' + q.qty + ' × ' + usd(p.unit) + ' = ' + usd(p.base) + '</span></div>';
   h += '<div class="r lab"><span>Decoration method: ' + esc(q.methodName) + '</span><span></span></div>';
-  if (!p.noImp) h += '<div class="r lab"><span>Imprint 1 — ' + esc(q.loc) + ', ' + esc(METHODS[q.method].bd) + ' ' + esc(q.methodName) + '</span><span></span></div>';
+  if (!p.noImp) h += '<div class="r lab"><span>Imprint 1 — ' + esc(q.loc) + ', ' +
+    (q.method === 'laser' ? esc(q.methodName) + ', no ink' : esc(METHODS[q.method].bd) + ' ' + esc(q.methodName)) + '</span><span></span></div>';
   h += '<div class="r"><span>Imprint Method Setup</span><span>Free</span></div>';
   h += '<div class="r"><span>Imprint Method Run Charge</span><span>' + (p.run ? q.qty + ' × ' + usd(p.method.run) + ' = ' + usd(p.run) : 'Free') + '</span></div>';
   h += '<div class="r tot"><span>Total Price</span><span>' + usd(p.total) + '</span></div>';
@@ -1665,7 +1666,7 @@ function breakRowsHTML(){
     h += '<div class="r"><span class="k">Shipping</span><span class="v">' + usd(r[1]) + '<small>' + esc(r[0]) + '</small></span></div>';
     h += '<div class="r"><span class="k">Sales tax (estimated)</span><span class="v">' + usd(qTax()) + '<small>' + (TAX_RATE*100).toFixed(2) + '% &middot; ' + esc(S.addr.city + ' ' + S.addr.zip) + '</small></span></div>';
   } else {
-    h += '<div class="r"><span class="k">Shipping and sales tax</span><span class="v" style="font-weight:400;color:var(--body)">Calculated at checkout &mdash; <button class="calc" id="calcNow">Calculate now</button></span></div>';
+    h += '<div class="r"><span class="k">Shipping and sales tax</span><span class="v" style="font-weight:400;color:var(--body)">Calculated at checkout <button class="calc" id="calcNow">Calculate now</button></span></div>';
   }
   return h;
 }
@@ -1697,7 +1698,7 @@ function renderRates(){
   var h = '';
   for (var i=0;i<RATES.length;i++)
     h += '<label class="rate"><input type="radio" name="rate" value="'+i+'"'+(i===S.rate?' checked':'')+'>' +
-         '<span><span class="nm">'+RATES[i][0]+'</span><span class="dt">Arrives by '+RATES[i][2]+' &middot; '+RATES[i][3]+' business day'+(RATES[i][3]===1?'':'s')+' in transit</span></span>' +
+         '<span><span class="nm">'+RATES[i][0]+'</span><span class="dt">Arrives by '+RATES[i][2]+', '+RATES[i][3]+' business day'+(RATES[i][3]===1?'':'s')+' in transit</span></span>' +
          '<span class="cost">'+usd(RATES[i][1])+'</span></label>';
   $('rateList').innerHTML = h;
   var rs = $('rateList').querySelectorAll('input');
@@ -1756,7 +1757,7 @@ function renderQuote(){
   $('flagValue').textContent = usd(qTotal());
   $('flagCaption').innerHTML = st === 'expired'
     ? 'Prices as of ' + ISSUED
-    : 'Average price per unit ' + usd(p.avg) + (r ? ' &middot; product only' : '');
+    : 'Average price per unit ' + usd(p.avg) + (r ? ', product only' : '');
   $('mobK').textContent = 'Total Price';
   $('mobV').textContent = usd(qTotal());
 
@@ -1789,6 +1790,8 @@ function renderQuote(){
   show($('delAddr'), S.delState === 'off' || S.delState === 'addr' || S.delState === 'empty');
   show($('delOpts'), S.delState === 'opts' || S.delState === 'chosen');
   show($('delEmpty'), S.delState === 'empty');
+  $('delEmpty').innerHTML = 'No rates came back for ' + esc(S.addr.zip || 'that ZIP code') +
+    '. Check the address, or leave it blank and we&rsquo;ll price shipping and sales tax at checkout.';
   $('delAddrLine').textContent = addrLine(S.addr);
 
   $('detToggle').textContent = S.details ? 'Edit company, phone or need-by date' : 'Add company, phone or need-by date';
@@ -1881,7 +1884,7 @@ function renderSheet(){
   $('sheetFlagK').textContent = 'Total Price';
   $('sheetFlagV').textContent = usd(qTotal());
   $('sheetFlagC').textContent = S.qState === 'expired' ? 'Prices as of ' + ISSUED
-    : 'Average price per unit ' + usd(p.avg) + (r ? ' · product only' : '');
+    : 'Average price per unit ' + usd(p.avg) + (r ? ', product only' : '');
   $('sheetSpec').innerHTML = S.spec === 'named'
     ? '<b>' + REP.name + '</b> &middot; ' + REP.phone + ' &middot; ' + REP.email
     : '<b>Your PromotionPros specialist</b> &middot; ' + PHONE + ' &middot; info@promotionpros.com';
@@ -1908,13 +1911,13 @@ function renderMail(){
   var lede = 'Here\'s your quote for ' + q.qty + ' pieces of the ' + PROD;
   $('mailLede').textContent = (q.loc === 'No Imprint')
     ? lede + ', with no imprint.'
-    : lede + '. Decoration is ' + q.methodName + ', ' + q.colorsLabel.toLowerCase() + ', on the ' + q.loc + ' location.';
+    : lede + '. Decoration is ' + q.methodName + ', ' + (q.method === 'laser' ? 'no ink' : q.colorsLabel.toLowerCase()) + ', on the ' + q.loc + ' location.';
   var rows = [
     ['Quote', QNO],
     ['Product', '#' + SKU + ' – ' + PROD],
     ['Quantity', q.qty + ' pieces'],
     ['Decoration Method', q.methodName],
-    ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : (q.method === 'laser' ? q.loc + ' · engraved, no ink color' : q.loc + ' · ' + q.colorsLabel)],
+    ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : q.loc + ' · ' + inkValue(q)],
     ['Subtotal with Setup Fee:', usd(p.total)],
     ['Shipping', r ? r[0] + ' — ' + usd(r[1]) : 'Calculated at checkout'],
     ['Sales tax (estimated)', r ? usd(qTax()) : 'Calculated at checkout'],
@@ -1928,7 +1931,7 @@ function renderMail(){
   var tr = r ? r : RATES[CHEAPEST];
   $('mailTiming').textContent = 'Production: ' + PROD_DAYS + ' business days after proof approval · Delivery: ' +
     tr[3] + ' business days (' + (tr === RATES[CHEAPEST] ? 'ground' : tr[0]) + ')';
-  $('mailArrive').textContent = 'Arrives by ' + tr[2] + ', ' + CUTOFF;
+  $('mailArrive').textContent = 'Arrives by ' + tr[2] + ' ' + CUTOFF;
   $('mailValid').textContent = 'This price is locked and honored at checkout through ' + VALID + '.';
   $('mailAtt').textContent = 'PromotionPros-Quote-' + QNO + '.pdf — attached, so you can forward it for approval.';
   $('mailSig').innerHTML = S.spec === 'named'

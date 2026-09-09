@@ -45,8 +45,8 @@ Build the Instant Quote v2 UI from the approved Phase 1 analysis: a production-f
 
 | Measure | Value |
 |---|---|
-| Quote CTA top, 1280×800, document y | **1312px** — **851px** with the prototype chrome (view bar, help line, chips, annotation panel) subtracted |
-| Orange CTA top, same basis | 1248px — **787px** without chrome (production capture: y≈791) |
+| Quote CTA top, 1280×800, document y | **1286px on the published build** — **825px** with the prototype chrome (view bar, help line, chips, annotation panel) subtracted. The local build measured 1312 / 851; the 26px gap is the annotation panel wrapping one line differently, not a layout change. |
+| Orange CTA top, same basis | 1222px — **761px** without chrome (local build 1248 / 787; production capture: y≈791) |
 | What is visible at 1280×800 without scrolling | Site header, category nav, breadcrumb, the top of the gallery, and the buy box down to about the quantity tier table. **Neither CTA is above the fold** — the orange CTA is already below it on production, and the quote CTA sits 64px lower. |
 | Modal height, 1280×800, breakdown collapsed | **404px** (constraint was ≤526px) |
 | Modal height, breakdown expanded | **672px**; with the 64px top offset the modal ends at 736px, so the dialog body still does not scroll |
@@ -152,6 +152,7 @@ Letterhead background computes to `rgba(0,0,0,0)` and the price-table header to 
 - 2026-09-09 Print stylesheet: hid `Calculate now` and the CTA helper, which were leaking into the printed sheet; added a print-only running header and the expired watermark to the quote document itself.
 - 2026-09-09 Tier table resized (fixed layout, 320px min) so all five quantity breaks fit the 420px buy box at 1280 without scrolling; the R4 scroll cue is retained for narrower widths.
 - 2026-09-09 Cookie banner OK button wired to dismiss.
+- 2026-09-09 Published to https://yurivolkoff.github.io/pp-quote-flow-v2/ — verified 200, hero and thumbnail images load from the production CDN, zero horizontal overflow, console clean.
 
 ## See also
 

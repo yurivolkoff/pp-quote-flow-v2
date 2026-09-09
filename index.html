@@ -280,6 +280,7 @@ body.show-ann .ann-list{display:block}
 .chg-row .chg{background:none;border:0;padding:4px 0;font-size:13.5px;font-weight:700;
   color:var(--navy);text-decoration:underline;min-height:32px}
 .chg-row .chg:hover{color:var(--orange-deep)}
+.chg-hint{font-size:12.5px;color:var(--helper);margin-top:2px;line-height:1.45}
 /* R3 item 4 — production time + the two arrival bookends, from the product's
    own Production & Shipping data. */
 .prodblock{border:1px solid var(--rule-strong);border-radius:4px;padding:12px 14px;margin-top:14px}
@@ -409,6 +410,9 @@ body.show-ann .ann-list{display:block}
 .flag .k{font-size:13px;color:#B9C3D8}
 .flag .v{font-size:38px;line-height:1.1;font-weight:900;color:#fff;margin-top:2px;letter-spacing:-.5px}
 .flag .c{font-size:12.5px;color:#B9C3D8;margin-top:6px}
+.flag .n{font-size:12.5px;font-weight:700;color:#FFD9C7;margin-top:4px}
+.sheet .flag .n{color:var(--body)}
+.mobile-bar .n{display:block;font-size:11px;color:var(--body);line-height:1.3}
 .q-inner .flag{margin-right:-28px}
 .sheet .flag{margin-right:-48px;background:#fff;border:2px solid var(--navy);border-right:0}
 .sheet .flag .k,.sheet .flag .c{color:var(--body)}
@@ -531,6 +535,21 @@ body.show-ann .ann-list{display:block}
      the footer contact line. Give the footer their combined height as clearance. */
   body.qview .q-foot{padding-bottom:104px}
   body.qview .olark{bottom:74px}
+  /* item 5 - the chat placeholder is fixed, so anything it can sit on top of has
+     to end before its left edge. Shrinking it to the far right clears the
+     delivery module's own button at every scroll position. */
+  .olark{right:8px;padding:8px 10px;font-size:12px}
+  .olark .tag{display:none}
+  #delBack{max-width:200px}
+  /* item 5 - the modal keeps its own scroll and shows a bottom edge, so the
+     arrival condition under the dates is never silently below the fold. */
+  .modal{display:flex;flex-direction:column;max-height:calc(100vh - var(--chrome, 0px) - 24px)}
+  .modal-head{flex:none}
+  #cBody,#cDone{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .modal-back{padding:0 8px 8px;align-items:flex-end}
+  .modal.scrollable::after{content:'';position:absolute;left:0;right:0;bottom:0;height:36px;
+    background:linear-gradient(to bottom, rgba(255,255,255,0), #fff);pointer-events:none;border-radius:0 0 4px 4px}
+  .modal{position:relative}
   .q-cols{grid-template-columns:minmax(0,1fr);gap:16px}
   .olark{bottom:88px;padding:10px 14px;font-size:13px}
   body.qview .olark{bottom:96px}
@@ -591,7 +610,7 @@ body.show-ann .ann-list{display:block}
   .q-foot{background:#fff !important;margin:22px 0 0;padding:14px 0 0;border-top:1px solid #EEE;text-align:left}
   .q-foot .ty{color:#111 !important}
   .q-foot .co{color:#444 !important}
-  .q-cta,.q-arrive,.chg-row{display:none !important}
+  .q-cta,.q-arrive,.chg-row,.chg-hint{display:none !important}
   .prow-body{display:block !important}
   .print-only{display:block !important}
   #qRun{display:flex !important;justify-content:space-between;font-size:11px;color:#666;border-bottom:1px solid #EEE;padding-bottom:8px;margin-bottom:14px}
@@ -672,6 +691,7 @@ body.show-ann .ann-list{display:block}
         <li><b>Sample row</b> &mdash; between the carousel and the Description accordion, the only left-column slot above the content. Outline ghost, never orange. This product has <b>no sample affordance in production</b>; the eligible state is shown for demonstration and the real price threshold is a Boris ask.</li>
         <li><b>Quote CTA</b> &mdash; directly under the orange CTA, same width, 48px, transparent with a 1px navy border, plus a 13px grey helper line. Everything above it is reproduced from production.</li>
         <li>Everything else on this page &mdash; header, gallery, accordions, buy box, footer, cookie banner and the Olark widget &mdash; is a reproduction of the live PDP, not a proposal.</li>
+        <li><b>Imprint Colors reads &ldquo;Full Color&rdquo; here on purpose</b> &mdash; that is what production prints for Laser Engraved, and this page reproduces production. Every surface this flow authors says <b>&ldquo;No ink&rdquo;</b> instead, because engraving uses none. The mismatch is deliberate until production changes the label upstream; it is a Boris ask.</li>
       </ul>
     </div>
   </div>
@@ -954,6 +974,7 @@ body.show-ann .ann-list{display:block}
                 <button class="chg" id="qChangeCfg">Change color or quantity</button>
                 <button class="chg" id="qChangeDec">Change decoration</button>
               </p>
+              <p class="chg-hint">Both open this configuration on the product page. Changing it issues a new quote that replaces this one.</p>
               <a class="plink" href="#" id="qProdLink">View this product on promotionpros.com</a>
             </div>
           </div>
@@ -965,6 +986,9 @@ body.show-ann .ann-list{display:block}
             <div class="flag">
               <div class="k" id="flagLabel">Total Price</div>
               <div class="v" id="flagValue">$299.00</div>
+              <!-- item 4: while shipping and tax are uncalculated, the only bold
+                   number on the page says so itself. -->
+              <div class="n" id="flagNote" hidden></div>
               <div class="c" id="flagCaption">Average price per unit $11.96</div>
             </div>
           </div>
@@ -1065,7 +1089,7 @@ body.show-ann .ann-list{display:block}
   </div>
 
   <div class="mobile-bar no-print" id="mobBar">
-    <span><span class="k" id="mobK">Total Price</span><br><span class="v" id="mobV">$330.25</span></span>
+    <span><span class="k" id="mobK">Total Price</span><span class="n" id="mobNote" hidden></span><br><span class="v" id="mobV">$330.25</span></span>
     <button class="go" id="mobGo">Order this quote</button>
   </div>
 </section>
@@ -1110,7 +1134,7 @@ body.show-ann .ann-list{display:block}
       <div class="sect">Price</div>
       <div class="totals" style="margin-top:14px">
         <div class="pbreak" id="sheetTotals"></div>
-        <div class="flag"><div class="k" id="sheetFlagK">Total Price</div><div class="v" id="sheetFlagV">$330.25</div><div class="c" id="sheetFlagC">Average price per unit $13.21</div></div>
+        <div class="flag"><div class="k" id="sheetFlagK">Total Price</div><div class="v" id="sheetFlagV">$330.25</div><div class="n" id="sheetFlagNote" hidden></div><div class="c" id="sheetFlagC">Average price per unit $13.21</div></div>
       </div>
       <p class="q-arrive" id="sheetArrive" style="font-size:13px"></p>
       <div class="sect">Questions about this quote</div>
@@ -1195,6 +1219,7 @@ body.show-ann .ann-list{display:block}
           <button class="chg" id="cChangeCfg">Change color or quantity</button>
           <button class="chg" id="cChangeDec">Change decoration</button>
         </p>
+        <p class="chg-hint">Both open this configuration on the product page.</p>
         <div id="cPriceWrap">
           <div class="mprice">
             <span class="k">Subtotal with Setup Fee:</span>
@@ -1326,8 +1351,25 @@ function price(st){
 }
 function snapshot(st){
   var p = price(st);
-  return {qty:st.qty, color:COLORS[st.color][0], method:st.method, methodName:p.method.name,
-          colorsLabel:p.noImp ? 'None' : p.method.colors, loc:st.loc, p:p};
+  return {qty:st.qty, colorIdx:st.color, color:COLORS[st.color][0], method:st.method, methodName:p.method.name,
+          colorsLabel:p.noImp ? 'None' : p.method.colors, loc:st.loc, pms:!!st.pms, p:p};
+}
+/* R3d item 2 - a change link edits THIS quote, so the product page has to come
+   back holding this quote's configuration, not whatever the page last had.
+   Without this the boot state (Screen Printed) and the live state (Laser
+   Engraved) drift apart and a replacement quote silently changes decoration. */
+function restoreConfig(){
+  var q = S.quote;
+  if (!q) return;
+  S.color = (typeof q.colorIdx === 'number') ? q.colorIdx : 0;
+  S.qty = q.qty;
+  S.method = q.method;
+  S.loc = q.loc;
+  S.pms = !!q.pms;
+  S.priceable = q.qty <= MAX_TIER;
+  S.decSet = true;
+  setChip(S.priceable ? 'chipPriceOk' : 'chipPriceQty', ['chipPriceOk','chipPriceQty']);
+  setChip('chipDecSet', ['chipDecDefault','chipDecSet']);
 }
 function cfgSentence(q){
   if (q.loc === 'No Imprint') return [q.color, q.qty + ' pieces', 'No Imprint'].join(' · ');
@@ -1551,7 +1593,9 @@ function openModal(){
   openC = true;
   setChrome();
   show($('cBody'), true); show($('cDone'), false);
+  if (S.reissue) prefillIdentity();
   $('cSubmit').disabled = true;
+  setTimeout(markScrollable, 40);
   renderModal();
   $('backC').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1577,7 +1621,9 @@ $('backC').addEventListener('mousedown', function(e){ if (e.target === this) dis
    steps 1-2; method and imprint live behind Customize Your Product. Both close
    the modal, open the right step, mark it, and put focus in it. */
 function goToStep(which){
-  closeModal(); go('pdp');
+  closeModal();
+  restoreConfig();
+  go('pdp');
   var wizard = (which === 'dec');
   S.cfgOpen = wizard;
   setChip(wizard ? 'chipCfgOpen' : 'chipCfgClosed', ['chipCfgClosed','chipCfgOpen']);
@@ -1595,6 +1641,11 @@ $('cChangeDec').addEventListener('click', function(){ goToStep('dec'); });
 /* item 17 - the same two links on the issued quote. Changing a configuration
    the buyer already holds a number for issues a NEW quote that names the old. */
 function reissueFrom(which){ S.reissue = true; goToStep(which); }
+/* The replacement inherits the buyer too, so nobody retypes their own name. */
+function prefillIdentity(){
+  if ($('cName').value.trim() === '') $('cName').value = BUYER.name;
+  if ($('cEmail').value.trim() === '') $('cEmail').value = BUYER.email;
+}
 $('qChangeCfg').addEventListener('click', function(){ reissueFrom('cfg'); });
 $('qChangeDec').addEventListener('click', function(){ reissueFrom('dec'); });
 $('cBrkT').addEventListener('click', function(){
@@ -1643,12 +1694,33 @@ document.addEventListener('keydown', function(e){
    VIEW 3 — ISSUED QUOTE
    ============================================================ */
 function chosenRate(){ return (S.delState === 'chosen') ? RATES[S.rate] : null; }
-function qShip(){ var r = chosenRate(); return r ? r[1] : 0; }
+/* R3d item 1 - THE totals model. Every surface that shows money reads this one
+   function: the price block, the sticky footer, the PDF view and the email.
+   Nothing recomputes a total of its own. */
+function totals(){
+  var r = chosenRate(), sub = S.quote.p.total;
+  var ship = r ? r[1] : 0;
+  var tax = r ? (sub + ship) * TAX_RATE : 0;
+  return {rate:r, sub:sub, ship:ship, tax:tax, total:sub + ship + tax, priced:!!r};
+}
+/* One painter for the big number, so the block and the sticky footer cannot
+   disagree even by accident. */
+function paintTotal(kEl, vEl, noteEl){
+  var t = totals();
+  kEl.textContent = 'Total Price';
+  vEl.textContent = usd(t.total);
+  if (noteEl){
+    noteEl.textContent = t.priced ? '' : 'before shipping and sales tax';
+    show(noteEl, !t.priced);
+  }
+  return t;
+}
+function qShip(){ return totals().ship; }
 /* item 6 - one address produces both numbers, so tax appears the moment a rate
    does. Destination rate is mocked at Chicago 60606, applied to merchandise plus
    shipping, which is how Illinois treats a taxable sale. */
-function qTax(){ var r = chosenRate(); return r ? (S.quote.p.total + r[1]) * TAX_RATE : 0; }
-function qTotal(){ return S.quote.p.total + qShip() + qTax(); }
+function qTax(){ return totals().tax; }
+function qTotal(){ return totals().total; }
 /* item 10 - the arrival promise the buyer is actually being sold: the chosen
    service if one is chosen, otherwise the cheapest. */
 function arriveDate(){ var r = chosenRate(); return (r ? r : RATES[CHEAPEST])[2]; }
@@ -1656,7 +1728,7 @@ function arriveLine(){ return 'Arrives by ' + arriveDate() + ' ' + CUTOFF; }
 /* item 9 + 12 - production's labels, top to bottom. Shipping and sales tax are
    rows that feed Total Price; there is no second "total with..." label. */
 function breakRowsHTML(){
-  var q = S.quote, p = q.p, r = chosenRate();
+  var q = S.quote, p = q.p, t = totals(), r = t.rate;
   var h = '';
   h += '<div class="r"><span class="k">Base Item Price</span><span class="v">' + q.qty + ' &times; ' + usd(p.unit) + '<small>' + usd(p.base) + '</small></span></div>';
   h += '<div class="r"><span class="k">Imprint Method Setup</span><span class="v">Free</span></div>';
@@ -1664,7 +1736,7 @@ function breakRowsHTML(){
   h += '<div class="r sub"><span class="k">Subtotal with Setup Fee:</span><span class="v">' + usd(p.total) + '</span></div>';
   if (r){
     h += '<div class="r"><span class="k">Shipping</span><span class="v">' + usd(r[1]) + '<small>' + esc(r[0]) + '</small></span></div>';
-    h += '<div class="r"><span class="k">Sales tax (estimated)</span><span class="v">' + usd(qTax()) + '<small>' + (TAX_RATE*100).toFixed(2) + '% &middot; ' + esc(S.addr.city + ' ' + S.addr.zip) + '</small></span></div>';
+    h += '<div class="r"><span class="k">Sales tax (estimated)</span><span class="v">' + usd(t.tax) + '<small>' + (TAX_RATE*100).toFixed(2) + '% &middot; ' + esc(S.addr.city + ' ' + S.addr.zip) + '</small></span></div>';
   } else {
     h += '<div class="r"><span class="k">Shipping and sales tax</span><span class="v" style="font-weight:400;color:var(--body)">Calculated at checkout <button class="calc" id="calcNow">Calculate now</button></span></div>';
   }
@@ -1753,13 +1825,11 @@ function renderQuote(){
   if ($('calcNow')) $('calcNow').addEventListener('click', function(e){
     e.preventDefault(); openDelivery();
   });
-  $('flagLabel').textContent = 'Total Price';
-  $('flagValue').textContent = usd(qTotal());
+  var T = paintTotal($('flagLabel'), $('flagValue'), $('flagNote'));
+  paintTotal($('mobK'), $('mobV'), $('mobNote'));
   $('flagCaption').innerHTML = st === 'expired'
     ? 'Prices as of ' + ISSUED
-    : 'Average price per unit ' + usd(p.avg) + (r ? ', product only' : '');
-  $('mobK').textContent = 'Total Price';
-  $('mobV').textContent = usd(qTotal());
+    : 'Average price per unit ' + usd(p.avg) + (T.priced ? ', product only' : '');
 
   var cta = $('qCta'), help = $('qCtaHelp'), mob = $('mobGo');
   cta.classList.remove('ghost');
@@ -1881,8 +1951,7 @@ function renderSheet(){
   if (S.details) t += '<div class="r"><span class="k">Needed by</span><span class="v">' + BUYER.by + '</span></div>';
   $('sheetTotals').innerHTML = t;
   $('sheetArrive').textContent = S.qState === 'expired' ? '' : arriveLine();
-  $('sheetFlagK').textContent = 'Total Price';
-  $('sheetFlagV').textContent = usd(qTotal());
+  paintTotal($('sheetFlagK'), $('sheetFlagV'), $('sheetFlagNote'));
   $('sheetFlagC').textContent = S.qState === 'expired' ? 'Prices as of ' + ISSUED
     : 'Average price per unit ' + usd(p.avg) + (r ? ', product only' : '');
   $('sheetSpec').innerHTML = S.spec === 'named'
@@ -1904,10 +1973,10 @@ $('pdfPrint').addEventListener('click', function(){ window.print(); });
    VIEW 5 — EMAIL
    ============================================================ */
 function renderMail(){
-  var q = S.quote, p = q.p, r = chosenRate();
+  var q = S.quote, p = q.p, T = totals(), r = T.rate;
   var updated = (r || S.details) ? 'Updated: ' : '';
-  $('mailSubj').textContent = updated + 'Your quote ' + QNO + ' · ' + PROD + ', ' + q.qty + ' pieces · ' + usd(qTotal());
-  $('mailPre').textContent = 'Total ' + usd(qTotal()) + ', valid through ' + VALID + '. PDF attached.';
+  $('mailSubj').textContent = updated + 'Your quote ' + QNO + ' · ' + PROD + ', ' + q.qty + ' pieces · ' + usd(T.total);
+  $('mailPre').textContent = 'Total ' + usd(T.total) + ', valid through ' + VALID + '. PDF attached.';
   var lede = 'Here\'s your quote for ' + q.qty + ' pieces of the ' + PROD;
   $('mailLede').textContent = (q.loc === 'No Imprint')
     ? lede + ', with no imprint.'
@@ -1918,10 +1987,10 @@ function renderMail(){
     ['Quantity', q.qty + ' pieces'],
     ['Decoration Method', q.methodName],
     ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : q.loc + ' · ' + inkValue(q)],
-    ['Subtotal with Setup Fee:', usd(p.total)],
-    ['Shipping', r ? r[0] + ' — ' + usd(r[1]) : 'Calculated at checkout'],
-    ['Sales tax (estimated)', r ? usd(qTax()) : 'Calculated at checkout'],
-    ['Total Price', usd(qTotal())],
+    ['Subtotal with Setup Fee:', usd(T.sub)],
+    ['Shipping', T.priced ? r[0] + ' — ' + usd(T.ship) : 'Calculated at checkout'],
+    ['Sales tax (estimated)', T.priced ? usd(T.tax) : 'Calculated at checkout'],
+    ['Total Price', usd(T.total) + (T.priced ? '' : ' before shipping and sales tax')],
     ['Valid through', VALID]
   ];
   if (S.replaces) rows.splice(1, 0, ['Replaces quote', S.replaces]);
@@ -1945,6 +2014,17 @@ function renderMail(){
 /* ============================================================
    RENDER + MEASUREMENTS
    ============================================================ */
+/* R3d item 1 - the four surfaces must always agree. If an edit ever forks the
+   model again, this says so in the console instead of shipping quietly. */
+function auditTotals(){
+  var want = usd(totals().total);
+  var seen = {block:$('flagValue').textContent, footer:$('mobV').textContent, pdf:$('sheetFlagV').textContent};
+  var bad = [];
+  for (var k in seen) if (seen[k] !== want) bad.push(k + '=' + seen[k]);
+  if (bad.length) console.error('Totals disagree. Expected ' + want + ', got ' + bad.join(', '));
+  return {expected:want, seen:seen, ok:!bad.length};
+}
+window.__totals = function(){ return {model:totals(), audit:auditTotals()}; };
 function renderAll(){
   renderPDP();
   if (openC) renderModal();
@@ -1952,6 +2032,7 @@ function renderAll(){
   renderSheet();
   renderMail();
   measure();
+  auditTotals();
 }
 window.__measure = function(){
   var m = {};
@@ -1980,7 +2061,15 @@ function measure(){
     'px (' + m.quoteCtaMinusChrome + 'px without prototype chrome) &middot; overflow-x ' + m.overflowX + 'px' +
     (m.modalH ? ' &middot; modal ' + m.modalH + 'px' : '');
 }
-window.addEventListener('resize', function(){ measure(); if (openC) setChrome(); });
+/* item 5 - flag the modal as scrollable so its bottom fade only shows when
+   there is genuinely more below the fold. */
+function markScrollable(){
+  var body = $('cBody').hasAttribute('hidden') ? $('cDone') : $('cBody');
+  var more = body.scrollHeight - body.clientHeight - body.scrollTop > 4;
+  $('cDialog').classList.toggle('scrollable', more);
+}
+['cBody','cDone'].forEach(function(id){ $(id).addEventListener('scroll', markScrollable); });
+window.addEventListener('resize', function(){ measure(); if (openC) { setChrome(); markScrollable(); } });
 window.addEventListener('orientationchange', function(){ if (openC) setTimeout(setChrome, 0); });
 
 /* ---------- boot ---------- */

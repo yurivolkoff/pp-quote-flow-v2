@@ -259,7 +259,7 @@ body.show-ann .ann-list{display:block}
 .modal{background:#fff;border-radius:4px;width:760px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,.3);outline:none}
 .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid var(--rule)}
 .modal-head h2{font-size:18px;font-weight:700;color:var(--ink)}
-.modal-x{background:none;border:0;font-size:20px;color:var(--body);width:36px;height:36px;border-radius:3px}
+.modal-x{background:none;border:0;font-size:20px;color:var(--body);width:44px;height:44px;border-radius:3px;flex:none}
 .modal-body{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:28px;padding:20px 24px 22px}
 .mcard-top{display:flex;gap:12px;align-items:flex-start}
 .mcard-top img{width:56px;height:56px;object-fit:contain;background:#F7F7F8;border-radius:3px;flex:none}
@@ -267,6 +267,49 @@ body.show-ann .ann-list{display:block}
 .mcard-top .nm{display:block;font-size:15px;font-weight:700;color:var(--ink);line-height:1.35}
 .mcard-top .chg{display:block;background:none;border:0;padding:0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline;margin-top:2px}
 .cfgline{font-size:14px;color:var(--body);margin-top:10px;line-height:1.5}
+/* R3 item 2 — the configuration reads as a labeled list, one fact per row,
+   because a single compressed sentence was unreadable at a glance. */
+.cfg-rows{margin-top:12px;border-top:1px solid var(--rule)}
+.cfg-rows dt,.cfg-rows dd{margin:0}
+.cfg-rows .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.cfg-rows .r .k{color:var(--body);flex:none}
+.cfg-rows .r .v{color:var(--ink);font-weight:700;text-align:right;min-width:0}
+/* R3 item 3 / 17 — two targeted change links, one per configurator zone. */
+.chg-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px}
+.chg-row .chg{background:none;border:0;padding:4px 0;font-size:13.5px;font-weight:700;
+  color:var(--navy);text-decoration:underline;min-height:32px}
+.chg-row .chg:hover{color:var(--orange-deep)}
+/* R3 item 4 — production time + the two arrival bookends, from the product's
+   own Production & Shipping data. */
+.prodblock{border:1px solid var(--rule-strong);border-radius:4px;padding:12px 14px;margin-top:14px}
+.prodblock h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.prodblock p{font-size:13px;color:var(--body);line-height:1.5}
+.prodblock .arr{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;
+  padding:6px 0;border-top:1px solid var(--rule);margin-top:8px}
+.prodblock .arr:first-of-type{margin-top:10px}
+.prodblock .arr .k{color:var(--body)}
+.prodblock .arr .v{color:var(--ink);font-weight:700;text-align:right}
+.prodblock .arr .v small{display:block;font-weight:400;font-size:12px;color:var(--helper)}
+.prodblock .fn{font-size:12px;color:var(--helper);margin-top:8px;line-height:1.45}
+/* R3 item 8 — Product facts and Decoration facts are different questions,
+   so they get their own columns instead of one long list. */
+.q-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px}
+.q-cols h4{font-size:12px;font-weight:700;color:var(--helper);letter-spacing:.02em;
+  padding-bottom:4px;border-bottom:2px solid var(--navy)}
+.q-cols .cfg-rows{margin-top:0;border-top:0}
+/* R3 item 9 — the price reads top to bottom in production labels. */
+.pbreak .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:6px 0;font-size:14px;color:var(--body)}
+.pbreak .r .v{color:var(--ink);text-align:right}
+.pbreak .r .v small{display:block;font-weight:400;font-size:12px;color:var(--helper)}
+.pbreak .r.sub{border-top:1px solid var(--rule-strong);margin-top:6px;padding-top:9px;font-weight:700}
+.pbreak .r.sub .k,.pbreak .r.sub .v{color:var(--ink);font-weight:700}
+.pbreak .calc{background:none;border:0;padding:0;font-size:13px;font-weight:700;
+  color:var(--navy);text-decoration:underline}
+.q-arrive{font-size:14px;font-weight:700;color:var(--ink);margin-top:10px;max-width:60ch}
+.q-replaces{font-size:13px;color:var(--helper);margin-top:4px}
+.act.copied{border-color:var(--green-rule);background:var(--green-bg);color:var(--green-ink)}
 .chg-help{display:block;font-size:12.5px;color:var(--helper);margin-top:2px;line-height:1.4}
 .band{border-radius:3px;padding:10px 12px;font-size:13px;line-height:1.5;margin-top:12px}
 .band.amber{background:var(--amber-bg);border:1px solid var(--amber-rule);color:var(--amber-ink)}
@@ -371,7 +414,7 @@ body.show-ann .ann-list{display:block}
 .sheet .flag .k,.sheet .flag .c{color:var(--body)}
 .sheet .flag .v{color:var(--navy)}
 .q-cta{width:100%;max-width:420px;height:52px;border:0;border-radius:4px;background:var(--orange);color:#fff;
-  font-size:18px;font-weight:700;margin-top:22px;display:block}
+  font-size:19px;font-weight:700;margin-top:22px;display:block}
 .q-cta:hover{background:var(--orange-hover)}
 .q-cta.ghost{background:#fff;border:1px solid var(--navy);color:var(--navy)}
 .q-cta-help{font-size:13px;color:var(--helper);margin-top:8px}
@@ -481,9 +524,14 @@ body.show-ann .ann-list{display:block}
     gap:12px;align-items:center}
   .mobile-bar .k{font-size:12px;color:var(--body)}
   .mobile-bar .v{font-size:17px;font-weight:700;color:var(--ink)}
-  .mobile-bar .go{margin-left:auto;min-height:44px;border:0;border-radius:4px;background:var(--orange);
+  .mobile-bar .go{margin-left:auto;min-height:44px;border:0;border-radius:4px;background:var(--orange-deep);
     color:#fff;font-size:15px;font-weight:700;padding:0 18px}
   #view-quote .q-page{padding-bottom:96px}
+  /* R3 item 25 — the Olark bubble and the sticky order bar together sat on top of
+     the footer contact line. Give the footer their combined height as clearance. */
+  body.qview .q-foot{padding-bottom:104px}
+  body.qview .olark{bottom:74px}
+  .q-cols{grid-template-columns:minmax(0,1fr);gap:16px}
   .olark{bottom:88px;padding:10px 14px;font-size:13px}
   body.qview .olark{bottom:96px}
   .toast{bottom:96px}
@@ -543,11 +591,31 @@ body.show-ann .ann-list{display:block}
   .q-foot{background:#fff !important;margin:22px 0 0;padding:14px 0 0;border-top:1px solid #EEE;text-align:left}
   .q-foot .ty{color:#111 !important}
   .q-foot .co{color:#444 !important}
-  .q-cta{display:none !important}
+  .q-cta,.q-arrive,.chg-row{display:none !important}
   .prow-body{display:block !important}
   .print-only{display:block !important}
   #qRun{display:flex !important;justify-content:space-between;font-size:11px;color:#666;border-bottom:1px solid #EEE;padding-bottom:8px;margin-bottom:14px}
-  .prow,.totals,.q-sec,.q-terms li,.ptab{page-break-inside:avoid}
+  .lh{grid-template-columns:1.25fr 1fr 1fr !important;gap:18px !important}
+  .q-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;gap:10px 28px !important}
+  .q-sec{margin-top:14px;padding-top:12px}
+  /* The price block cleared the first page by ~30px. These trims are print-only
+     and pull it back up, so the quote pages as 2 sheets instead of 3. */
+  .q-inner{padding:8px 0 0 !important}
+  .prow-body{padding:12px}
+  .prow-head{padding:12px}
+  .prow-head img{width:48px;height:48px}
+  .cfg-rows .r{padding:5px 0}
+  .pbreak .r{padding:5px 0}
+  .totals{gap:14px}
+  .q-cols h4{padding-bottom:3px}
+  .tierband{margin-top:8px}
+  .plink{margin-top:8px}
+  .q-terms{page-break-inside:avoid}
+  .prow,.totals,.q-terms li,.ptab,.q-cols>div,.pbreak,.spec-card{page-break-inside:avoid}
+  .lh,.q-h1row{page-break-after:avoid}
+  .q-inner>.q-sec:first-of-type{page-break-before:avoid}
+  .q-sec h3{page-break-after:avoid}
+  .q-sec{page-break-inside:auto}
   #qDoc{position:relative}
   #qWm[hidden]{display:none !important}
   #qWm{display:flex !important;position:absolute;inset:0;z-index:5}
@@ -808,7 +876,7 @@ body.show-ann .ann-list{display:block}
     </div>
     <div class="state-chips">
       <span class="lbl">Delivery</span>
-      <button class="chip on" data-ds="off">Off</button>
+      <button class="chip on" data-ds="off">No address</button>
       <button class="chip" data-ds="addr">Address</button>
       <button class="chip" data-ds="opts">Options</button>
       <button class="chip" data-ds="chosen">Chosen</button>
@@ -837,7 +905,7 @@ body.show-ann .ann-list{display:block}
 
     <div class="q-doc" id="qDoc">
       <div class="wmark print-only" id="qWm" hidden><span id="qWmTxt">Expired</span></div>
-      <div class="print-only" id="qRun"><span>Quote Q-48310 &middot; PromotionPros</span><span>promotionpros.com/q/48310</span></div>
+      <div class="print-only" id="qRun"><span id="qRunL">Quote Q-48310 &middot; PromotionPros</span><span id="qRunR">promotionpros.com/q/48310</span></div>
       <!-- letterhead, three zones, remapped from the legacy PDF -->
       <div class="lh">
         <div>
@@ -853,6 +921,7 @@ body.show-ann .ann-list{display:block}
           <h1 class="q-h1" id="qH1">Quote Q-48310</h1>
           <span class="st-chip valid" id="qChip">Valid</span>
         </div>
+        <p class="q-replaces" id="qReplaces" hidden></p>
         <div class="q-actions no-print">
           <button class="act" id="actPdf">&#8681; Download PDF</button>
           <button class="act" id="actShare">&#8599; Share link</button>
@@ -872,63 +941,76 @@ body.show-ann .ann-list{display:block}
               <span class="prow-chev" id="prowChev">&#9660;</span>
             </button>
             <div class="prow-body" id="prowBody" hidden>
-              <ul class="cfg-list" id="qCfgList"></ul>
-              <table class="ptab">
-                <thead><tr><th>Qty</th><th>Run charge</th><th>Setup</th><th>Price per item</th><th>Total Price</th></tr></thead>
-                <tbody><tr id="qPtabRow"></tr></tbody>
-              </table>
+              <!-- item 8: Product facts and Decoration facts answer different
+                   questions, so they get their own columns. -->
+              <div class="q-cols">
+                <div><h4>Product</h4><dl class="cfg-rows" id="qColProd"></dl></div>
+                <div><h4>Decoration</h4><dl class="cfg-rows" id="qColDec"></dl></div>
+              </div>
               <p class="tierband" id="qTierBand"></p>
+              <!-- item 17: the same two change links the modal has, so the issued
+                   quote stops being a one-way door. -->
+              <p class="chg-row">
+                <button class="chg" id="qChangeCfg">Change color or quantity</button>
+                <button class="chg" id="qChangeDec">Change decoration</button>
+              </p>
               <a class="plink" href="#" id="qProdLink">View this product on promotionpros.com</a>
             </div>
           </div>
 
+          <!-- item 9: the price reads top to bottom in production's own labels.
+               The flag is the terminal Total Price row, not a second copy of it. -->
           <div class="totals">
-            <div>
-              <div class="trow"><span class="k">Subtotal with Setup Fee:</span><span class="v" id="tSub">$330.25</span></div>
-              <div class="trow" id="tShipRow"><span class="k">Shipping</span><span class="v" id="tShip"></span></div>
-              <div class="trow"><span class="k">Sales tax</span><span class="v" style="font-weight:400;color:var(--body)">added at checkout where applicable</span></div>
-            </div>
+            <div class="pbreak" id="qBreak"></div>
             <div class="flag">
               <div class="k" id="flagLabel">Total Price</div>
-              <div class="v" id="flagValue">$330.25</div>
-              <div class="c" id="flagCaption">Average price per unit $13.21</div>
+              <div class="v" id="flagValue">$299.00</div>
+              <div class="c" id="flagCaption">Average price per unit $11.96</div>
             </div>
           </div>
 
           <button class="q-cta" id="qCta">Order this quote</button>
-          <p class="q-cta-help" id="qCtaHelp">Puts this exact configuration in your cart at the quoted price</p>
+          <!-- item 10: the arrival promise gets its own line under the button. -->
+          <p class="q-arrive" id="qArrive"></p>
+          <p class="q-cta-help" id="qCtaHelp" hidden></p>
           <p class="q-validity" id="qValidity"></p>
           <p class="q-rev" id="qRev" hidden></p>
         </div>
 
         <!-- delivery module -->
-        <div class="q-sec no-print">
+        <!-- items 14 + 15: ONE control path. The checkbox is gone; the address
+             fields are the entry point and the only thing that drives the lookup,
+             and "Calculate now" in the breakdown scrolls here instead of resetting
+             the module. The address shown is the address typed. -->
+        <div class="q-sec no-print" id="delSec">
           <h3>Delivery</h3>
           <div class="mod">
-            <label class="mod-check"><input type="checkbox" id="delChk"><span>Calculate delivery</span></label>
-            <p class="mod-help">Adds a shipping cost and an arrival date to this quote. Without it, shipping is calculated at checkout.</p>
-            <div class="mod-in" id="delIn" hidden>
+            <p class="mod-help">Add a delivery address to price shipping and sales tax on this quote. Without it, both are calculated at checkout.</p>
+            <div class="mod-in" id="delIn">
               <div id="delAddr">
-                <div class="fieldrow"><label for="delStreet">Street address</label><input type="text" id="delStreet" value="2140 W Grand Ave"></div>
+                <div class="fieldrow"><label for="delStreet">Street address</label><input type="text" id="delStreet" value="2140 W Grand Ave" autocomplete="shipping street-address"></div>
                 <div class="grid2">
-                  <div class="fieldrow"><label for="delCity">City</label><input type="text" id="delCity" value="Chicago"></div>
-                  <div class="fieldrow"><label for="delZip">ZIP code</label><input type="text" id="delZip" value="60612"></div>
+                  <div class="fieldrow"><label for="delCity">City</label><input type="text" id="delCity" value="Chicago" autocomplete="shipping address-level2"></div>
+                  <div class="fieldrow"><label for="delState">State</label><input type="text" id="delState" value="IL" maxlength="2" autocomplete="shipping address-level1"></div>
                 </div>
+                <div class="fieldrow" style="max-width:210px"><label for="delZip">ZIP code</label><input type="text" id="delZip" value="60612" inputmode="numeric" autocomplete="shipping postal-code"></div>
                 <button class="btn-mini" id="delGo">Show delivery options</button>
                 <p class="reason">These are the same rates checkout uses</p>
               </div>
               <div id="delOpts" hidden>
                 <div class="addr-summary" style="display:flex;justify-content:space-between;gap:14px;font-size:14px">
-                  <span>2140 W Grand Ave, Chicago, IL 60612</span>
+                  <span id="delAddrLine"></span>
                   <button class="det-link" id="delChange">Change address</button>
                 </div>
                 <fieldset style="border:0;padding:0;margin:0"><legend class="sr">Delivery options</legend>
                   <div class="ratelist" id="rateList"></div>
                 </fieldset>
-                <p class="reason">Arrival dates include 5 business days of production after you approve your proof</p>
+                <p class="reason" id="delFoot">Arrival dates include 5 business days of production after you approve your proof</p>
               </div>
-              <div class="band amber" id="delEmpty" hidden>No rates came back for 60612. Check the address, or leave delivery off and we&rsquo;ll price shipping at checkout.</div>
+              <div class="band amber" id="delEmpty" hidden>No rates came back for that ZIP code. Check the address, or leave it blank and we&rsquo;ll price shipping and sales tax at checkout.</div>
             </div>
+            <!-- item 7: a way back to the number this module just changed. -->
+            <button class="btn-mini" id="delBack" style="margin-top:16px">Back to quote summary</button>
           </div>
         </div>
 
@@ -1019,17 +1101,18 @@ body.show-ann .ann-list{display:block}
         <div><h4>Quote</h4><div class="z" id="sheetMeta"></div></div>
       </div>
       <h1 id="sheetName">#GLD0001055 &ndash; 10 Oz Stainless Wine Tumbler</h1>
-      <ul class="cfg-list" id="sheetCfg" style="grid-template-columns:minmax(0,1fr)"></ul>
+      <p class="q-replaces" id="sheetReplaces" hidden></p>
+      <div class="q-cols" style="margin-top:14px">
+        <div><h4>Product</h4><dl class="cfg-rows" id="sheetColProd"></dl></div>
+        <div><h4>Decoration</h4><dl class="cfg-rows" id="sheetColDec"></dl></div>
+      </div>
       <div class="hero"><img id="sheetImg" alt=""></div>
       <div class="sect">Price</div>
-      <table class="ptab">
-        <thead><tr><th>Qty</th><th>Run charge</th><th>Setup</th><th>Price per item</th><th>Total Price</th></tr></thead>
-        <tbody><tr id="sheetPtab"></tr></tbody>
-      </table>
-      <div class="totals" style="margin-top:18px">
-        <div id="sheetTotals"></div>
+      <div class="totals" style="margin-top:14px">
+        <div class="pbreak" id="sheetTotals"></div>
         <div class="flag"><div class="k" id="sheetFlagK">Total Price</div><div class="v" id="sheetFlagV">$330.25</div><div class="c" id="sheetFlagC">Average price per unit $13.21</div></div>
       </div>
+      <p class="q-arrive" id="sheetArrive" style="font-size:13px"></p>
       <div class="sect">Questions about this quote</div>
       <p style="font-size:13px;color:var(--ink)" id="sheetSpec"></p>
       <p style="font-size:12.5px;color:var(--body);margin-top:4px">Here for questions about this quote. Replies by the next business day.</p>
@@ -1038,7 +1121,7 @@ body.show-ann .ann-list{display:block}
       <p style="font-size:13px;color:var(--ink);font-weight:700;margin-top:24px">Thank you for your request. We look forward to earning your business.</p>
       <div class="foot">
         <span class="qr" aria-hidden="true"></span>
-        <span style="flex:1">View online, share, or order at <b>promotionpros.com/q/48310</b></span>
+        <span style="flex:1">View online, share, or order at <b id="sheetUrl">promotionpros.com/q/48310</b></span>
         <span id="sheetGen"></span>
       </div>
     </div>
@@ -1072,6 +1155,10 @@ body.show-ann .ann-list{display:block}
         <h1>Hi Dana,</h1>
         <p class="lede" id="mailLede"></p>
         <div class="rows" id="mailRows"></div>
+        <!-- item 13: production and transit are two different waits, so they are
+             two facts, and the arrival date is the conclusion drawn from them. -->
+        <p class="fine" id="mailTiming"></p>
+        <p class="fine" id="mailArrive" style="font-weight:700;color:#1F1F1F"></p>
         <a class="btn" href="#">View quote online</a>
         <p class="fine" id="mailValid"></p>
         <div class="att"><span>&#128206;</span><span id="mailAtt">PromotionPros-Quote-Q-48310.pdf &mdash; attached, so you can forward it for approval.</span></div>
@@ -1097,11 +1184,17 @@ body.show-ann .ann-list{display:block}
           <img id="cThumb" alt="">
           <span>
             <span class="nm">10 Oz Stainless Wine Tumbler</span>
-            <button class="chg" id="cChange">Change on the product page</button>
           </span>
         </div>
-        <p class="cfgline" id="cCfg"></p>
+        <!-- item 2: one fact per row. Label left, value right. -->
+        <dl class="cfg-rows" id="cCfg"></dl>
         <div class="band amber" id="cDefault" hidden></div>
+        <!-- item 1 + 3: the change links sit BELOW the default-decoration band,
+             and split by configurator zone so each lands on the right step. -->
+        <p class="chg-row">
+          <button class="chg" id="cChangeCfg">Change color or quantity</button>
+          <button class="chg" id="cChangeDec">Change decoration</button>
+        </p>
         <div id="cPriceWrap">
           <div class="mprice">
             <span class="k">Subtotal with Setup Fee:</span>
@@ -1109,6 +1202,9 @@ body.show-ann .ann-list{display:block}
           </div>
           <button class="brk-toggle" id="cBrkT" aria-expanded="false" aria-controls="cBrk">View Price Breakdown</button>
           <div class="brk" id="cBrk" hidden></div>
+          <!-- item 4: production time and the two arrival bookends, taken from this
+               product's own Production & Shipping accordion. -->
+          <div class="prodblock" id="cProd"></div>
         </div>
         <div class="spec-block" id="cSpecWrap" hidden>
           <h3>A specialist prices this configuration</h3>
@@ -1165,8 +1261,22 @@ var METHODS = {
 };
 var LOCS = ['Back','Front (small)','Front (large)','Two Sided','No Imprint'];
 var AREA = '1.75″W × 4.25″H';
-var RATES = [['FedEx Ground',18.40,'Tue, Sep 22, 2026'],['FedEx 2Day',52.90,'Thu, Sep 17, 2026'],['FedEx Standard Overnight',88.15,'Wed, Sep 16, 2026']];
-var QNO = 'Q-48310', ISSUED = 'Sep 9, 2026', VALID = 'Oct 9, 2026', GEN = 'Sep 9, 2026';
+var RATES = [
+  ['FedEx Ground', 18.40, 'Tue, Sep 22, 2026', 3, 'ground'],
+  ['FedEx 2Day', 52.90, 'Mon, Sep 21, 2026', 2, 'expedited'],
+  ['FedEx Standard Overnight', 88.15, 'Fri, Sep 18, 2026', 1, 'expedited']
+];
+var CHEAPEST = 0, EARLIEST = 2;
+/* From the 2026-09-09 wine-tumbler capture, Production & Shipping accordion. */
+var PROOF_LINE = 'Free digital proof &mdash; typically within 24 hours';
+var PROD_DAYS = 5;
+var PROD_LINE = 'Production: approximately 5 business days after proof approval';
+var CUTOFF = 'if ordered today before 12 PM CT';
+var DELIV_FN = 'Estimated, continental US, ' + CUTOFF;
+/* Mock destination rate for Chicago 60606. Source is an assumption, not a
+   tax service - see the Boris asks in notes.md. */
+var TAX_RATE = 0.1025;
+var QNO = 'Q-48310', NEXT_QNO = 'Q-48312', ISSUED = 'Sep 9, 2026', VALID = 'Oct 9, 2026', GEN = 'Sep 9, 2026';
 var ORDERNO = 'W-10488', ORDERED_ON = 'Sep 12, 2026';
 var BUYER = {name:'Dana Whitfield', email:'dana@northlakeevents.com', co:'Northlake Events', phone:'(312) 555-0148', by:'Oct 2, 2026'};
 var REP = {name:'Terry Alvarez', ini:'TA', phone:'(844) 667-7666 ext. 214', email:'terry@promotionpros.com'};
@@ -1176,8 +1286,14 @@ var S = {
   view:'pdp', sample:true, cfgOpen:false, decSet:false, priceable:true,
   color:0, qty:25, method:'laser', loc:'Back',
   qState:'valid', delState:'off', rate:0, details:false, spec:'named', arrival:false,
-  submitted:false, prowOpen:false, quote:null
+  submitted:false, prowOpen:false, quote:null,
+  addr:{street:'2140 W Grand Ave', city:'Chicago', state:'IL', zip:'60612'},
+  replaces:null, reissue:false
 };
+function qUrl(){ return 'promotionpros.com/q/' + QNO.replace('Q-',''); }
+function addrLine(a){
+  return [a.street, a.city, (a.state + ' ' + a.zip).trim()].filter(function(x){ return x; }).join(', ');
+}
 
 /* ---------- helpers ---------- */
 function $(id){ return document.getElementById(id); }
@@ -1215,7 +1331,49 @@ function snapshot(st){
 }
 function cfgSentence(q){
   if (q.loc === 'No Imprint') return [q.color, q.qty + ' pieces', 'No Imprint'].join(' · ');
-  return [q.color, q.qty + ' pieces', q.methodName + ' on ' + q.loc, q.colorsLabel].join(' · ');
+  return [q.color, q.qty + ' pieces', q.methodName + ' on ' + q.loc].join(' · ');
+}
+/* item 2 - Laser Engraved removes material; it has no ink, so it never prints an
+   ink-colour count. Screen Printed keeps production's own Imprint Colors value. */
+function inkRow(q){
+  if (q.loc === 'No Imprint') return null;
+  if (q.method === 'laser') return ['Imprint colors', 'Engraved, no ink color'];
+  return ['Imprint colors', q.colorsLabel];
+}
+function rowsHTML(rows){
+  var h = '';
+  for (var i=0;i<rows.length;i++){
+    if (!rows[i]) continue;
+    h += '<div class="r"><dt class="k">' + esc(rows[i][0]) + '</dt><dd class="v">' + esc(rows[i][1]) + '</dd></div>';
+  }
+  return h;
+}
+/* item 2 - the modal reads one fact per row: colour, quantity, then decoration. */
+function modalCfgHTML(q){
+  var rows = [['Color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration method', q.methodName]];
+  if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); }
+  else { rows.push(['Location', q.loc]); rows.push(inkRow(q)); }
+  return rowsHTML(rows);
+}
+/* item 8 - the issued quote splits the same facts into what was bought and how
+   it is decorated. Location carries its imprint area, because they are one fact. */
+function colProdHTML(q){ return rowsHTML([['Color', q.color], ['Quantity', q.qty + ' pieces']]); }
+function colDecHTML(q){
+  var rows = [['Method', q.methodName]];
+  if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); return rowsHTML(rows); }
+  rows.push(['Location', q.loc + ' · ' + AREA]);
+  if (q.method !== 'laser') rows.push(['Imprint colors', q.colorsLabel]);
+  return rowsHTML(rows);
+}
+/* item 4 - production time and the two arrival bookends, from this product's
+   own Production & Shipping data. */
+function prodBlockHTML(){
+  var c = RATES[CHEAPEST], e = RATES[EARLIEST];
+  return '<h4>Production time</h4>' +
+    '<p>' + PROOF_LINE + '<br>' + PROD_LINE + '</p>' +
+    '<div class="arr"><span class="k">Earliest arrival</span><span class="v">' + e[2] + '<small>' + esc(e[0]) + '</small></span></div>' +
+    '<div class="arr"><span class="k">Cheapest arrival</span><span class="v">' + c[2] + '<small>' + esc(c[0]) + '</small></span></div>' +
+    '<p class="fn">' + DELIV_FN + '</p>';
 }
 function isSpecialist(){ return !S.priceable; }
 
@@ -1292,8 +1450,15 @@ function renderPDP(){
   $('qtyIn').value = S.qty;
   var p = price(S);
   $('unitIn').value = usd(p.unit);
-  $('pdpSubtotal').textContent = usd(p.total);
-  $('pdpEach').textContent = 'Price each: ' + usd(p.unit);
+  /* item 19 - above the top published tier there is no price to extrapolate, so
+     the buy box says who prices it instead of inventing a figure. The modal has
+     always done this; now the two agree on the same page load. */
+  var gated = !S.priceable;
+  $('pdpSubtotal').textContent = gated ? 'A specialist prices this quantity' : usd(p.total);
+  $('pdpSubtotal').style.fontSize = gated ? '16px' : '';
+  $('pdpSubtotal').style.lineHeight = gated ? '1.35' : '';
+  $('pdpEach').textContent = gated ? 'Quantities above ' + MAX_TIER + ' are priced by hand' : 'Price each: ' + usd(p.unit);
+  show($('pdpBrk'), !gated);
   show($('stepsTop'), !S.cfgOpen);
   show($('stepsWizard'), S.cfgOpen);
   $('ctaPrimary').textContent = S.cfgOpen ? 'Add to Cart' : 'Customize Your Product';
@@ -1309,9 +1474,11 @@ function renderPDP(){
   show($('sampleRow'), S.sample);
   var blocked = S.loc === '';
   $('quoteCta').disabled = blocked;
+  $('quoteCta').textContent = gated ? 'Request a specialist quote' : 'Get an instant quote';
   $('quoteHelp').textContent = blocked
     ? 'Choose an imprint location to price this quote'
-    : 'Priced instantly, locked for 30 days, no sales call';
+    : (gated ? 'A specialist prices quantities above ' + MAX_TIER + ' and replies the next business day'
+             : 'Priced instantly, locked for 30 days, no sales call');
   renderTier();
 }
 function setChip(onId, group){ group.forEach(function(id){ $(id).classList.toggle('on', id === onId); }); }
@@ -1341,7 +1508,7 @@ var openC = false, lastFocus = null;
 function renderModal(){
   var q = snapshot(S), p = q.p;
   $('cThumb').src = THUMB + IDS[0] + '.webp';
-  $('cCfg').textContent = cfgSentence(q);
+  $('cCfg').innerHTML = modalCfgHTML(q);
   var showDefault = !S.decSet;
   $('cDefault').innerHTML = 'This quote prices the default decoration: <b>' + esc(METHODS.laser.name) + ' on Back, full color</b>. Change it on the product page.';
   show($('cDefault'), showDefault && !isSpecialist());
@@ -1351,6 +1518,7 @@ function renderModal(){
   $('cSub').textContent = usd(p.total);
   $('cEach').textContent = 'Price each: ' + usd(p.unit);
   $('cBrk').innerHTML = breakdownHTML(q);
+  $('cProd').innerHTML = prodBlockHTML();
   var ok = contactValid();
   $('cSubmit').disabled = !ok;
   $('cSubmit').textContent = isSpecialist() ? 'Request a specialist quote' : 'Get my quote';
@@ -1404,14 +1572,30 @@ $('quoteCta').addEventListener('click', function(){ S.view = 'modal'; $('protoHe
 $('cX').addEventListener('click', dismiss);
 $('cDoneBack').addEventListener('click', dismiss);
 $('backC').addEventListener('mousedown', function(e){ if (e.target === this) dismiss(); });
-$('cChange').addEventListener('click', function(){
+/* items 3 + 17 - two links, two destinations. Colour and quantity live in PDP
+   steps 1-2; method and imprint live behind Customize Your Product. Both close
+   the modal, open the right step, mark it, and put focus in it. */
+function goToStep(which){
   closeModal(); go('pdp');
-  S.cfgOpen = true; setChip('chipCfgOpen',['chipCfgClosed','chipCfgOpen']); renderAll();
-  var el = $('stepsWizard');
+  var wizard = (which === 'dec');
+  S.cfgOpen = wizard;
+  setChip(wizard ? 'chipCfgOpen' : 'chipCfgClosed', ['chipCfgClosed','chipCfgOpen']);
+  renderAll();
+  var el = $(wizard ? 'stepsWizard' : 'stepsTop');
   el.scrollIntoView({block:'center'});
   el.style.outline = '2px solid var(--orange)'; el.style.outlineOffset = '8px';
   setTimeout(function(){ el.style.outline = ''; }, 2000);
-});
+  var focusEl = $(wizard ? 'methLaser' : 'qtyIn');
+  setTimeout(function(){ focusEl.focus(); }, 40);
+  announce(wizard ? 'Decoration Method step opened' : 'Colors and Quantity steps opened');
+}
+$('cChangeCfg').addEventListener('click', function(){ goToStep('cfg'); });
+$('cChangeDec').addEventListener('click', function(){ goToStep('dec'); });
+/* item 17 - the same two links on the issued quote. Changing a configuration
+   the buyer already holds a number for issues a NEW quote that names the old. */
+function reissueFrom(which){ S.reissue = true; goToStep(which); }
+$('qChangeCfg').addEventListener('click', function(){ reissueFrom('cfg'); });
+$('qChangeDec').addEventListener('click', function(){ reissueFrom('dec'); });
 $('cBrkT').addEventListener('click', function(){
   var open = $('cBrk').hasAttribute('hidden');
   show($('cBrk'), open); this.setAttribute('aria-expanded', open);
@@ -1435,6 +1619,7 @@ $('cSubmit').addEventListener('click', function(){
     setTimeout(function(){ $('cDialog').focus(); }, 20);
     return;
   }
+  if (S.reissue){ S.replaces = QNO; QNO = NEXT_QNO; S.reissue = false; }
   S.quote = snapshot(S);
   S.arrival = true; $('chipArrival').classList.add('on');
   S.qState = 'valid'; setQs('valid');
@@ -1457,12 +1642,38 @@ document.addEventListener('keydown', function(e){
    VIEW 3 — ISSUED QUOTE
    ============================================================ */
 function chosenRate(){ return (S.delState === 'chosen') ? RATES[S.rate] : null; }
-function qTotal(){ var r = chosenRate(); return S.quote.p.total + (r ? r[1] : 0); }
+function qShip(){ var r = chosenRate(); return r ? r[1] : 0; }
+/* item 6 - one address produces both numbers, so tax appears the moment a rate
+   does. Destination rate is mocked at Chicago 60606, applied to merchandise plus
+   shipping, which is how Illinois treats a taxable sale. */
+function qTax(){ var r = chosenRate(); return r ? (S.quote.p.total + r[1]) * TAX_RATE : 0; }
+function qTotal(){ return S.quote.p.total + qShip() + qTax(); }
+/* item 10 - the arrival promise the buyer is actually being sold: the chosen
+   service if one is chosen, otherwise the cheapest. */
+function arriveDate(){ var r = chosenRate(); return (r ? r : RATES[CHEAPEST])[2]; }
+function arriveLine(){ return 'Arrives by ' + arriveDate() + ' ' + CUTOFF; }
+/* item 9 + 12 - production's labels, top to bottom. Shipping and sales tax are
+   rows that feed Total Price; there is no second "total with..." label. */
+function breakRowsHTML(){
+  var q = S.quote, p = q.p, r = chosenRate();
+  var h = '';
+  h += '<div class="r"><span class="k">Base Item Price</span><span class="v">' + q.qty + ' &times; ' + usd(p.unit) + '<small>' + usd(p.base) + '</small></span></div>';
+  h += '<div class="r"><span class="k">Imprint Method Setup</span><span class="v">Free</span></div>';
+  h += '<div class="r"><span class="k">Imprint Method Run Charge</span><span class="v">' + (p.run ? q.qty + ' &times; ' + usd(p.method.run) + '<small>' + usd(p.run) + '</small>' : 'Free') + '</span></div>';
+  h += '<div class="r sub"><span class="k">Subtotal with Setup Fee:</span><span class="v">' + usd(p.total) + '</span></div>';
+  if (r){
+    h += '<div class="r"><span class="k">Shipping</span><span class="v">' + usd(r[1]) + '<small>' + esc(r[0]) + '</small></span></div>';
+    h += '<div class="r"><span class="k">Sales tax (estimated)</span><span class="v">' + usd(qTax()) + '<small>' + (TAX_RATE*100).toFixed(2) + '% &middot; ' + esc(S.addr.city + ' ' + S.addr.zip) + '</small></span></div>';
+  } else {
+    h += '<div class="r"><span class="k">Shipping and sales tax</span><span class="v" style="font-weight:400;color:var(--body)">Calculated at checkout &mdash; <button class="calc" id="calcNow">Calculate now</button></span></div>';
+  }
+  return h;
+}
 function qTerms(){
   var q = S.quote;
   var scope = q.loc === 'No Imprint'
     ? 'Pricing covers the blank product with no imprint.'
-    : 'Pricing covers ' + q.methodName + ' in ' + q.colorsLabel.toLowerCase() + ' on the ' + q.loc + ' location, with one artwork setup. Extra locations, extra colors, and Pantone/PMS color matching are priced separately.';
+    : 'Pricing covers ' + q.methodName + (q.method === 'laser' ? '' : ' in ' + q.colorsLabel.toLowerCase()) + ' on the ' + q.loc + ' location, with one artwork setup. Extra locations, extra colors, and Pantone/PMS color matching are priced separately.';
   return [
     'Valid through ' + VALID + '. The price above is locked and honored at checkout until that date.',
     'Prices are in US dollars and exclude sales tax and shipping, both added at checkout unless shown above.',
@@ -1471,25 +1682,6 @@ function qTerms(){
     'Quantities may ship up to 5% over or under, and are billed as shipped.',
     'After ' + VALID + ', pricing reflects the supplier and tariff costs in effect when you order.'
   ];
-}
-function cfgListHTML(q){
-  var rows = [['Product color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration Method', q.methodName]];
-  if (q.loc !== 'No Imprint'){
-    rows.push(['Imprint location', q.loc]);
-    rows.push(['Imprint Colors', q.colorsLabel]);
-    rows.push(['Imprint area', AREA]);
-  } else { rows.push(['Imprint', 'No Imprint']); }
-  rows.push(['Pantone/PMS color match', 'Not requested']);
-  var h = '';
-  for (var i=0;i<rows.length;i++)
-    h += '<li><span class="ck">✓</span><span><span class="k">' + esc(rows[i][0]) + '</span> &mdash; <span class="v">' + esc(rows[i][1]) + '</span></span></li>';
-  return h;
-}
-function ptabRowHTML(q){
-  var p = q.p;
-  return '<td data-l="Qty">' + q.qty + '</td><td data-l="Run charge">' + (p.run ? usd(p.run) : 'Free') +
-         '</td><td data-l="Setup">Free</td><td data-l="Price per item">' + usd(p.unit) +
-         '</td><td data-l="Total Price"><b>' + usd(p.total) + '</b></td>';
 }
 function setQs(v){
   S.qState = v;
@@ -1505,13 +1697,15 @@ function renderRates(){
   var h = '';
   for (var i=0;i<RATES.length;i++)
     h += '<label class="rate"><input type="radio" name="rate" value="'+i+'"'+(i===S.rate?' checked':'')+'>' +
-         '<span><span class="nm">'+RATES[i][0]+'</span><span class="dt">Arrives by '+RATES[i][2]+'</span></span>' +
+         '<span><span class="nm">'+RATES[i][0]+'</span><span class="dt">Arrives by '+RATES[i][2]+' &middot; '+RATES[i][3]+' business day'+(RATES[i][3]===1?'':'s')+' in transit</span></span>' +
          '<span class="cost">'+usd(RATES[i][1])+'</span></label>';
   $('rateList').innerHTML = h;
   var rs = $('rateList').querySelectorAll('input');
   for (var j=0;j<rs.length;j++){
     (function(r){
-      function pick(){ S.rate = +r.value; setDs('chosen'); renderAll(); announce('Shipping added, new total ' + usd(qTotal())); }
+      /* item 16 - both events, because a preselected radio fires click without
+         change and a keyboard move fires change without click. */
+      function pick(){ S.rate = +r.value; setDs('chosen'); renderAll(); announce('Shipping and sales tax added. Total Price ' + usd(qTotal())); }
       r.addEventListener('change', pick);
       r.addEventListener('click', pick);
     })(rs[j]);
@@ -1539,34 +1733,42 @@ function renderQuote(){
   $('qProdName').innerHTML = '#' + SKU + ' &ndash; ' + esc(PROD);
   $('qCfgLine').textContent = cfgSentence(q);
   $('qRowSub').textContent = usd(p.total);
-  $('qCfgList').innerHTML = cfgListHTML(q);
-  $('qPtabRow').innerHTML = ptabRowHTML(q);
+  $('qColProd').innerHTML = colProdHTML(q);
+  $('qColDec').innerHTML = colDecHTML(q);
   $('qTierBand').textContent = tierBand(q.qty);
+  $('qRunL').innerHTML = 'Quote ' + QNO + ' &middot; PromotionPros';
+  $('qRunR').textContent = qUrl();
+  show($('qReplaces'), !!S.replaces);
+  if (S.replaces) $('qReplaces').textContent = 'Replaces quote ' + S.replaces;
   show($('prowBody'), S.prowOpen);
   $('prowHead').setAttribute('aria-expanded', S.prowOpen);
   $('prowChev').innerHTML = S.prowOpen ? '&#9650;' : '&#9660;';
 
-  $('tSub').textContent = usd(p.total);
   var r = chosenRate();
-  if (r){ $('tShip').innerHTML = esc(r[0]) + ' &mdash; ' + usd(r[1]) + '<small>Arrives by ' + r[2] + '</small>'; }
-  else { $('tShip').innerHTML = '<span style="font-weight:400;color:var(--body)">calculated at checkout</span> &nbsp;<button class="calc" id="calcNow">Calculate now</button>'; }
-  if ($('calcNow')) $('calcNow').addEventListener('click', function(){
-    $('delChk').checked = true; setDs('addr'); renderAll();
-    var el = $('delIn'); el.scrollIntoView({block:'center'}); $('delStreet').focus();
+  $('qBreak').innerHTML = breakRowsHTML();
+  /* item 15 - "Calculate now" is the same control path as the Delivery module,
+     not a second one. It only exists while no rate is chosen, and it moves the
+     buyer to the address fields without touching any stored selection. */
+  if ($('calcNow')) $('calcNow').addEventListener('click', function(e){
+    e.preventDefault(); openDelivery();
   });
-  $('flagLabel').textContent = r ? 'Total with shipping' : 'Total Price';
+  $('flagLabel').textContent = 'Total Price';
   $('flagValue').textContent = usd(qTotal());
   $('flagCaption').innerHTML = st === 'expired'
     ? 'Prices as of ' + ISSUED
-    : 'Average price per unit ' + usd(p.avg) + (r ? ', before shipping' : '');
-  $('mobK').textContent = r ? 'Total with shipping' : 'Total Price';
+    : 'Average price per unit ' + usd(p.avg) + (r ? ' &middot; product only' : '');
+  $('mobK').textContent = 'Total Price';
   $('mobV').textContent = usd(qTotal());
 
   var cta = $('qCta'), help = $('qCtaHelp'), mob = $('mobGo');
   cta.classList.remove('ghost');
-  if (st === 'expired'){ cta.textContent = 'Get an updated quote'; help.textContent = 'Same configuration, priced today, with a new quote number'; mob.textContent = 'Get an updated quote'; }
-  else if (st === 'ordered'){ cta.textContent = 'View order ' + ORDERNO; cta.classList.add('ghost'); help.textContent = 'Ordered on ' + ORDERED_ON; mob.textContent = 'View order'; }
-  else { cta.textContent = 'Order this quote'; help.textContent = 'Puts this exact configuration in your cart at the quoted price'; mob.textContent = 'Order this quote'; }
+  /* item 11 - the helper that described the cart is gone; the button goes
+     straight to checkout, so the only line under it is the arrival promise. */
+  show($('qArrive'), st === 'valid' || st === 'expiring');
+  $('qArrive').textContent = arriveLine();
+  if (st === 'expired'){ cta.textContent = 'Get an updated quote'; help.textContent = 'Same configuration, priced today, with a new quote number'; show(help, true); mob.textContent = 'Get an updated quote'; }
+  else if (st === 'ordered'){ cta.textContent = 'View order ' + ORDERNO; cta.classList.add('ghost'); help.textContent = 'Ordered on ' + ORDERED_ON; show(help, true); mob.textContent = 'View order'; }
+  else { cta.textContent = 'Order this quote'; show(help, false); mob.textContent = 'Order this quote'; }
 
   $('qValidity').textContent = {
     valid: 'This price is locked through ' + VALID + ' and honored at checkout until then.',
@@ -1576,17 +1778,18 @@ function renderQuote(){
   }[st] || '';
 
   var rev = [];
-  if (chosenRate()) rev.push('delivery');
+  if (chosenRate()) rev.push('delivery and sales tax');
   if (S.details) rev.push('details');
   show($('qRev'), rev.length > 0);
   if (rev.length) $('qRev').textContent = 'Revised Sep 9, 2026: ' + rev.join(' and ') +
     ' added. The quote number and the quoted product price are unchanged.';
 
-  $('delChk').checked = S.delState !== 'off';
-  show($('delIn'), S.delState !== 'off');
-  show($('delAddr'), S.delState === 'addr' || S.delState === 'empty');
+  /* item 14/15 - 'off' and 'addr' are the same screen now: the address fields
+     ARE the entry point, and there is no checkbox in front of them. */
+  show($('delAddr'), S.delState === 'off' || S.delState === 'addr' || S.delState === 'empty');
   show($('delOpts'), S.delState === 'opts' || S.delState === 'chosen');
   show($('delEmpty'), S.delState === 'empty');
+  $('delAddrLine').textContent = addrLine(S.addr);
 
   $('detToggle').textContent = S.details ? 'Edit company, phone or need-by date' : 'Add company, phone or need-by date';
   $('detSummary').textContent = S.details
@@ -1609,13 +1812,40 @@ function renderQuote(){
   renderRates();
 }
 $('prowHead').addEventListener('click', function(){ S.prowOpen = !S.prowOpen; renderQuote(); });
-$('delChk').addEventListener('change', function(){ setDs(this.checked ? 'addr' : 'off'); renderAll(); });
-$('delGo').addEventListener('click', function(){ setDs('opts'); renderAll(); announce('Delivery options ready'); });
-$('delChange').addEventListener('click', function(){ setDs('addr'); renderAll(); });
+/* item 15 - the single entry point into the Delivery module. It never clears a
+   chosen rate: with one already picked it just brings the buyer back to it. */
+function openDelivery(){
+  var chosen = !!chosenRate();
+  if (!chosen && S.delState !== 'opts') setDs('addr');
+  renderAll();
+  $('delSec').scrollIntoView({block:'center'});
+  setTimeout(function(){ (chosen || S.delState === 'opts' ? $('delChange') : $('delStreet')).focus(); }, 40);
+}
+/* item 14 - what the buyer typed is what gets priced and what gets shown. */
+$('delGo').addEventListener('click', function(){
+  S.addr = {street:$('delStreet').value.trim(), city:$('delCity').value.trim(),
+            state:$('delState').value.trim().toUpperCase(), zip:$('delZip').value.trim()};
+  if (!S.addr.zip || !S.addr.street){ setDs('empty'); renderAll(); announce('Enter a street address and ZIP code'); return; }
+  setDs('opts'); renderAll();
+  announce('Delivery options for ' + addrLine(S.addr));
+});
+$('delChange').addEventListener('click', function(){ setDs('addr'); renderAll(); setTimeout(function(){ $('delStreet').focus(); }, 30); });
+/* item 7 - back to the number this module just changed. */
+$('delBack').addEventListener('click', function(){
+  document.querySelector('#view-quote .totals').scrollIntoView({block:'center'});
+  $('qCta').focus();
+});
 $('detToggle').addEventListener('click', function(){ var open = $('detIn').hasAttribute('hidden'); show($('detIn'), open); });
 $('detSave').addEventListener('click', function(){ S.details = true; $('chipDetails').classList.add('on'); show($('detIn'), false); renderAll(); toast('Details added to quote ' + QNO); });
 $('specBtn').addEventListener('click', function(){ toast('Opens a message prefilled with “I have a question about quote ' + QNO + '.”'); });
-$('actShare').addEventListener('click', function(){ toast('Quote link copied'); });
+$('qCta').addEventListener('click', function(){ toast('Opens checkout with this configuration and this price. It does not stop at the cart.'); });
+$('mobGo').addEventListener('click', function(){ toast('Opens checkout with this configuration and this price. It does not stop at the cart.'); });
+$('actShare').addEventListener('click', function(){
+  var b = this;
+  b.classList.add('copied'); b.innerHTML = '&#10003; Copied';
+  clearTimeout(b._t); b._t = setTimeout(function(){ b.classList.remove('copied'); b.innerHTML = '&#8599; Share link'; }, 2400);
+  toast('Quote link copied');
+});
 $('actPrint').addEventListener('click', function(){ window.print(); });
 $('actPdf').addEventListener('click', function(){ go('pdf'); });
 $('mobGo').addEventListener('click', function(){ toast('Restores this configuration in the cart at the quoted price.'); });
@@ -1639,23 +1869,26 @@ function renderSheet(){
   $('sheetMeta').innerHTML = '<b>' + QNO + '</b><br>Issued ' + ISSUED + '<br>Valid through ' + VALID;
   $('sheetImg').src = IMG + IDS[0] + '.webp';
   $('sheetName').innerHTML = '#' + SKU + ' &ndash; ' + esc(PROD);
-  $('sheetCfg').innerHTML = cfgListHTML(q);
-  $('sheetPtab').innerHTML = ptabRowHTML(q);
-  var t = '<div class="trow"><span class="k">Subtotal with Setup Fee:</span><span class="v">' + usd(p.total) + '</span></div>';
-  t += '<div class="trow"><span class="k">Shipping</span><span class="v">' + (r ? esc(r[0]) + ' &mdash; ' + usd(r[1]) + '<small>Arrives by ' + r[2] + '</small>' : '<span style="font-weight:400">calculated at checkout</span>') + '</span></div>';
-  t += '<div class="trow"><span class="k">Sales tax</span><span class="v" style="font-weight:400">added at checkout where applicable</span></div>';
-  if (S.details) t += '<div class="trow"><span class="k">Needed by</span><span class="v">' + BUYER.by + '</span></div>';
+  $('sheetColProd').innerHTML = colProdHTML(q);
+  $('sheetColDec').innerHTML = colDecHTML(q);
+  $('sheetUrl').textContent = qUrl();
+  show($('sheetReplaces'), !!S.replaces);
+  if (S.replaces) $('sheetReplaces').textContent = 'Replaces quote ' + S.replaces;
+  var t = breakRowsHTML().replace('<button class="calc" id="calcNow">Calculate now</button>', 'at checkout');
+  if (S.details) t += '<div class="r"><span class="k">Needed by</span><span class="v">' + BUYER.by + '</span></div>';
   $('sheetTotals').innerHTML = t;
-  $('sheetFlagK').textContent = r ? 'Total with shipping' : 'Total Price';
+  $('sheetArrive').textContent = S.qState === 'expired' ? '' : arriveLine();
+  $('sheetFlagK').textContent = 'Total Price';
   $('sheetFlagV').textContent = usd(qTotal());
   $('sheetFlagC').textContent = S.qState === 'expired' ? 'Prices as of ' + ISSUED
-    : 'Average price per unit ' + usd(p.avg) + (r ? ', before shipping' : '');
+    : 'Average price per unit ' + usd(p.avg) + (r ? ' · product only' : '');
   $('sheetSpec').innerHTML = S.spec === 'named'
     ? '<b>' + REP.name + '</b> &middot; ' + REP.phone + ' &middot; ' + REP.email
     : '<b>Your PromotionPros specialist</b> &middot; ' + PHONE + ' &middot; info@promotionpros.com';
   var th = ''; qTerms().forEach(function(x){ th += '<li>' + esc(x) + '</li>'; });
   $('sheetTerms').innerHTML = th;
   $('sheetGen').textContent = 'Generated ' + GEN;
+  $('sheetRun').innerHTML = 'Quote ' + QNO + ' &middot; PromotionPros';
   var pages = Math.max(1, Math.ceil($('sheet').scrollHeight / 1056));
   $('sheet').nextSibling;
   document.querySelector('#sheet .run span:last-child').textContent = 'Page 1 of ' + pages;
@@ -1681,14 +1914,21 @@ function renderMail(){
     ['Product', '#' + SKU + ' – ' + PROD],
     ['Quantity', q.qty + ' pieces'],
     ['Decoration Method', q.methodName],
-    ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : q.loc + ' · ' + q.colorsLabel],
-    ['Shipping', r ? r[0] + ' — ' + usd(r[1]) + ' · Arrives by ' + r[2] : 'Calculated at checkout'],
-    [r ? 'Total with shipping' : 'Total Price', usd(qTotal())],
+    ['Imprint', q.loc === 'No Imprint' ? 'No Imprint' : (q.method === 'laser' ? q.loc + ' · engraved, no ink color' : q.loc + ' · ' + q.colorsLabel)],
+    ['Subtotal with Setup Fee:', usd(p.total)],
+    ['Shipping', r ? r[0] + ' — ' + usd(r[1]) : 'Calculated at checkout'],
+    ['Sales tax (estimated)', r ? usd(qTax()) : 'Calculated at checkout'],
+    ['Total Price', usd(qTotal())],
     ['Valid through', VALID]
   ];
+  if (S.replaces) rows.splice(1, 0, ['Replaces quote', S.replaces]);
   var h = '';
   for (var i=0;i<rows.length;i++) h += '<div class="r"><span class="k">' + esc(rows[i][0]) + '</span><span class="v">' + esc(rows[i][1]) + '</span></div>';
   $('mailRows').innerHTML = h;
+  var tr = r ? r : RATES[CHEAPEST];
+  $('mailTiming').textContent = 'Production: ' + PROD_DAYS + ' business days after proof approval · Delivery: ' +
+    tr[3] + ' business days (' + (tr === RATES[CHEAPEST] ? 'ground' : tr[0]) + ')';
+  $('mailArrive').textContent = 'Arrives by ' + tr[2] + ', ' + CUTOFF;
   $('mailValid').textContent = 'This price is locked and honored at checkout through ' + VALID + '.';
   $('mailAtt').textContent = 'PromotionPros-Quote-' + QNO + '.pdf — attached, so you can forward it for approval.';
   $('mailSig').innerHTML = S.spec === 'named'

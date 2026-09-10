@@ -254,18 +254,19 @@ body.show-ann .ann-list{display:block}
    VIEW 2 — QUOTE MODAL
    ============================================================ */
 .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:180;display:none;
-  align-items:flex-start;justify-content:center;padding:64px 16px 24px;overflow:auto}
+  align-items:flex-start;justify-content:center;padding:40px 16px 24px;overflow:auto}
 .modal-back.open{display:flex}
-.modal{background:#fff;border-radius:4px;width:760px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,.3);outline:none}
-.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;border-bottom:1px solid var(--rule)}
-.modal-head h2{font-size:18px;font-weight:700;color:var(--ink)}
+.modal{background:#fff;border-radius:4px;width:820px;max-width:100%;box-shadow:0 24px 60px rgba(0,0,0,.3);outline:none}
+/* R4 - the product identity moves into the dialog header, so the left column
+   opens straight onto the two configuration groups (solution spec 2.6). */
+.modal-head{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 24px;border-bottom:1px solid var(--rule)}
+.modal-head img{width:40px;height:40px;object-fit:contain;background:#F7F7F8;border-radius:3px;flex:none}
+.modal-head .htxt{min-width:0;flex:1 1 auto}
+.modal-head h2{font-size:17px;font-weight:700;color:var(--ink);line-height:1.3}
+.modal-head .sub{display:block;font-size:13px;color:var(--body);line-height:1.4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .modal-x{background:none;border:0;font-size:20px;color:var(--body);width:44px;height:44px;border-radius:3px;flex:none}
-.modal-body{display:grid;grid-template-columns:minmax(0,1fr) 292px;gap:28px;padding:20px 24px 22px}
-.mcard-top{display:flex;gap:12px;align-items:flex-start}
-.mcard-top img{width:56px;height:56px;object-fit:contain;background:#F7F7F8;border-radius:3px;flex:none}
-.mcard-top>span:last-child{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
-.mcard-top .nm{display:block;font-size:15px;font-weight:700;color:var(--ink);line-height:1.35}
-.mcard-top .chg{display:block;background:none;border:0;padding:0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline;margin-top:2px}
+.modal-body{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;padding:20px 24px 22px;align-items:start}
 .cfgline{font-size:14px;color:var(--body);margin-top:10px;line-height:1.5}
 /* R3 item 2 — the configuration reads as a labeled list, one fact per row,
    because a single compressed sentence was unreadable at a glance. */
@@ -283,16 +284,6 @@ body.show-ann .ann-list{display:block}
 .chg-hint{font-size:12.5px;color:var(--helper);margin-top:2px;line-height:1.45}
 /* R3 item 4 — production time + the two arrival bookends, from the product's
    own Production & Shipping data. */
-.prodblock{border:1px solid var(--rule-strong);border-radius:4px;padding:12px 14px;margin-top:14px}
-.prodblock h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
-.prodblock p{font-size:13px;color:var(--body);line-height:1.5}
-.prodblock .arr{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;
-  padding:6px 0;border-top:1px solid var(--rule);margin-top:8px}
-.prodblock .arr:first-of-type{margin-top:10px}
-.prodblock .arr .k{color:var(--body)}
-.prodblock .arr .v{color:var(--ink);font-weight:700;text-align:right}
-.prodblock .arr .v small{display:block;font-weight:400;font-size:12px;color:var(--helper)}
-.prodblock .fn{font-size:12px;color:var(--helper);margin-top:8px;line-height:1.45}
 /* R3 item 8 — Product facts and Decoration facts are different questions,
    so they get their own columns instead of one long list. */
 .q-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px}
@@ -316,30 +307,80 @@ body.show-ann .ann-list{display:block}
 .band.amber{background:var(--amber-bg);border:1px solid var(--amber-rule);color:var(--amber-ink)}
 .band.info{background:var(--info-bg);border:1px solid var(--info-rule);color:var(--info-ink)}
 .band.green{background:var(--green-bg);border:1px solid var(--green-rule);color:var(--green-ink)}
-.mprice{background:var(--gray-bg);padding:12px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.mprice>span:last-child{text-align:right}
-.mprice .k{font-size:15px;font-weight:700;color:var(--ink)}
-.mprice .v{display:block;font-size:18px;font-weight:700;color:var(--ink)}
-.mprice .e{display:block;font-size:12px;color:var(--body);text-align:right;margin-top:3px}
-.brk-toggle{background:none;border:0;padding:8px 0 0;font-size:13px;font-weight:700;color:var(--navy);text-decoration:underline}
-.brk{border:1px solid var(--rule);border-radius:3px;padding:10px 12px;margin-top:10px;font-size:13px}
-.brk .r{display:flex;justify-content:space-between;gap:12px;padding:4px 0}
+/* R4 - the modal's two groups reuse the .q-cols idiom the issued quote already
+   ships, stacked rather than side by side because the column is 300px wide. */
+.mcfg{display:grid;gap:14px}
+.mcfg h4{font-size:12px;font-weight:700;color:var(--helper);letter-spacing:.02em;
+  text-transform:uppercase;padding-bottom:4px;border-bottom:2px solid var(--navy)}
+.mcfg .cfg-rows{margin-top:10px;border-top:0}
+.mcfg .cfg-rows .r{font-size:13.5px;padding:6px 0}
+.mcfg .band{margin-top:9px;font-size:12.5px;padding:8px 10px}
+.mcfg .band+.cfg-rows{margin-top:9px}
+.mcfg .chg-row{margin-top:5px}
+.mcfg .chg-hint{margin-top:0}
+/* R4 - expandable summary card (solution spec 2.3). The summary row IS the
+   header and the control, and the body unfolds inside the same hairline ring.
+   White and never filled, so neither card competes with the CTA (spec 2.4). */
+.ecard{border:1px solid var(--rule);border-radius:4px;background:#fff}
+.ecard+.ecard{margin-top:8px}
+.ecard-head{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 12px;font-family:inherit}
+.ecard-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ecard-row+.ecard-row{margin-top:6px}
+.ecard .k{font-size:13.5px;color:var(--body);line-height:1.35}
+.ecard .v{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap}
+.ecard .e{font-size:12px;color:var(--body);white-space:nowrap}
+.ecard .tg{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--navy);flex:none}
+.ecard .tg span{text-decoration:underline}
+.ecard .chev{width:9px;height:6px;flex:none;transition:transform .15s ease}
+.ecard-head[aria-expanded=true] .chev{transform:rotate(180deg)}
+.ecard-body{margin:0 12px;padding:9px 0 11px;border-top:1px solid var(--rule)}
+.brk{font-size:12.5px}
+.brk .r{display:flex;justify-content:space-between;gap:12px;padding:3px 0}
 .brk .r.lab{color:var(--helper)}
-.brk .r.tot{border-top:1px solid var(--rule);margin-top:6px;padding-top:8px;font-weight:700;color:var(--ink)}
-.brk .fn{font-size:12px;color:var(--helper);margin-top:8px;line-height:1.45}
-.mform label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px}
-.mform input{width:100%;height:46px;border:1px solid var(--input-border);border-radius:3px;padding:0 12px;
+.brk .r.tot{border-top:1px solid var(--rule);margin-top:5px;padding-top:7px;font-weight:700;color:var(--ink)}
+.brk .fn{font-size:12px;color:var(--helper);margin-top:7px;line-height:1.45}
+/* R4 - proof and production are a sequence; the two arrival dates are two
+   prices for one parcel, so they hang off the Ships node as a dotted branch
+   rather than continuing the line (solution spec 2.2). */
+.tl{padding-left:20px;font-size:12.5px}
+.tl .node{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:10px}
+.tl .node::before{content:'';position:absolute;left:-20px;top:3px;width:11px;height:11px;border-radius:50%;
+  border:2px solid var(--navy);background:#fff;box-sizing:border-box}
+.tl .node::after{content:'';position:absolute;left:-15px;top:15px;bottom:0;border-left:1px solid var(--rule-strong)}
+.tl .node .k{color:var(--ink);font-weight:700}
+.tl .node .v{color:var(--body);white-space:nowrap}
+.tl .node.done{padding-bottom:0}
+.tl .node.done::before{content:'\2713';display:flex;align-items:center;justify-content:center;
+  width:14px;height:14px;left:-21px;top:1px;border:0;
+  background:var(--navy);color:#fff;font-size:10px;font-weight:700;line-height:1}
+.tl .node.done::after{display:none}
+.tl .fork{position:relative;margin-top:5px}
+.tl .fork::before{content:'';position:absolute;left:-15px;top:-5px;bottom:11px;border-left:1px dotted var(--rule-strong)}
+.tl .br{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:2px 0}
+.tl .br::before{content:'';position:absolute;left:-15px;top:11px;width:13px;border-top:1px dotted var(--rule-strong)}
+.tl .br .k{color:var(--body)}
+.tl .br .v{color:var(--ink);font-weight:700;white-space:nowrap}
+.tlfn{font-size:12px;color:var(--helper);margin-top:8px;line-height:1.45}
+.tspec{font-size:13.5px;color:var(--body);padding:10px 12px;line-height:1.4}
+/* R4 - 24px above the form is the largest vertical gap in the column, so name,
+   email and the CTA read as one cluster and the cards as an aside above it. */
+.mfields{margin-top:24px}
+.mform .fieldrow{margin-bottom:12px}
+.mform label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.mform input{width:100%;height:44px;border:1px solid var(--input-border);border-radius:3px;padding:0 12px;
   font-family:inherit;font-size:15px;color:var(--ink)}
 .mform input[aria-invalid=true]{border-color:var(--error-text)}
 .err{font-size:12.5px;color:var(--error-text);margin-top:5px;display:block}
 .privacy{font-size:12px;color:var(--helper);margin-top:12px;line-height:1.45}
-.mcta{width:100%;height:50px;border:0;border-radius:4px;background:var(--orange-deep);color:#fff;font-size:17px;font-weight:700;margin-top:14px}
+.mform .privacy{margin-top:10px}
+.mcta{width:100%;height:48px;border:0;border-radius:4px;background:var(--orange-deep);color:#fff;font-size:17px;font-weight:700;margin-top:12px}
 .mcta:hover{background:#A83700}
 .mcta[disabled]{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
 .reason{font-size:12.5px;color:var(--helper);margin-top:7px;line-height:1.45}
-.spec-block{border:1px solid var(--rule-strong);border-radius:4px;padding:14px;margin-top:2px}
-.spec-block h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
-.spec-block p{font-size:13.5px;color:var(--body)}
+.mform .reason{margin-top:6px}
+.spec-block{border:1px solid var(--rule);border-radius:4px;padding:11px 12px;margin-top:0}
+.spec-block h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.spec-block p{font-size:13px;color:var(--body);line-height:1.45}
 
 /* ============================================================
    VIEW 3 — ISSUED QUOTE (web)
@@ -1199,57 +1240,75 @@ body.show-ann .ann-list{display:block}
 <div class="modal-back" id="backC" role="presentation">
   <div class="modal" id="cDialog" role="dialog" aria-modal="true" aria-labelledby="cTitle" tabindex="-1">
     <div class="modal-head">
-      <h2 id="cTitle">Your instant quote</h2>
+      <img id="cThumb" alt="">
+      <span class="htxt">
+        <h2 id="cTitle">Your instant quote</h2>
+        <span class="sub" id="cSubName">10 Oz Stainless Wine Tumbler</span>
+      </span>
       <button class="modal-x" id="cX" aria-label="Close">&#10005;</button>
     </div>
     <div class="modal-body" id="cBody">
-      <div>
-        <div class="mcard-top">
-          <img id="cThumb" alt="">
-          <span>
-            <span class="nm">10 Oz Stainless Wine Tumbler</span>
-          </span>
+      <!-- R4 - two labelled groups. Each owns its own change link, and the amber
+           notice introduces the Decoration group from above its rows instead of
+           commenting on them after the fact (solution spec, amendment 1). -->
+      <div class="mcfg">
+        <div>
+          <h4>Product</h4>
+          <dl class="cfg-rows" id="cColProd"></dl>
+          <p class="chg-row"><button class="chg" id="cChangeCfg">Change color or quantity</button></p>
         </div>
-        <!-- item 2: one fact per row. Label left, value right. -->
-        <dl class="cfg-rows" id="cCfg"></dl>
-        <div class="band amber" id="cDefault" hidden></div>
-        <!-- item 1 + 3: the change links sit BELOW the default-decoration band,
-             and split by configurator zone so each lands on the right step. -->
-        <p class="chg-row">
-          <button class="chg" id="cChangeCfg">Change color or quantity</button>
-          <button class="chg" id="cChangeDec">Change decoration</button>
-        </p>
-        <p class="chg-hint">Both open this configuration on the product page.</p>
-        <div id="cPriceWrap">
-          <div class="mprice">
-            <span class="k">Subtotal with Setup Fee:</span>
-            <span><span class="v" id="cSub">$299.00</span><span class="e" id="cEach">Price each: $11.96</span></span>
-          </div>
-          <button class="brk-toggle" id="cBrkT" aria-expanded="false" aria-controls="cBrk">View Price Breakdown</button>
-          <div class="brk" id="cBrk" hidden></div>
-          <!-- item 4: production time and the two arrival bookends, taken from this
-               product's own Production & Shipping accordion. -->
-          <div class="prodblock" id="cProd"></div>
+        <div>
+          <h4>Decoration</h4>
+          <p class="band amber" id="cDefault" hidden></p>
+          <dl class="cfg-rows" id="cColDec"></dl>
+          <p class="chg-row"><button class="chg" id="cChangeDec">Change decoration</button></p>
         </div>
-        <div class="spec-block" id="cSpecWrap" hidden>
-          <h3>A specialist prices this configuration</h3>
-          <p id="cSpecWhy">Quantities above 500 are priced by hand, so this one doesn&rsquo;t price instantly.</p>
-        </div>
+        <p class="chg-hint">Both links open this configuration on the product page.</p>
       </div>
+      <!-- R4 - CTA-first summary column. Two quiet white cards that expand in
+           place, then the largest gap in the column, then the one filled and
+           only orange element in the dialog (solution spec, amendment 4). -->
       <div class="mform">
-        <div class="fieldrow">
-          <label for="cName">Full name</label>
-          <input type="text" id="cName" autocomplete="name">
-          <span class="err" id="cNameErr" hidden>Enter the name for this quote</span>
+        <div id="cPriceWrap">
+          <div class="ecard">
+            <button class="ecard-head" id="cBrkT" aria-expanded="false" aria-controls="cBrk">
+              <span class="ecard-row"><span class="k">Subtotal with Setup Fee:</span><span class="v" id="cSub">$299.00</span></span>
+              <span class="ecard-row"><span class="tg"><span id="cBrkLabel">View Price Breakdown</span><svg class="chev" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="e" id="cEach">Price each: $11.96</span></span>
+            </button>
+            <div class="ecard-body brk" id="cBrk" hidden></div>
+          </div>
+          <div class="ecard">
+            <button class="ecard-head" id="cTimeT" aria-expanded="false" aria-controls="cTime">
+              <span class="ecard-row"><span class="k" id="cTimeSum">Ready to ship in about 6 business days</span><span class="tg"><span id="cTimeLabel">View timeline</span><svg class="chev" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+            </button>
+            <div class="ecard-body" id="cTime" hidden></div>
+          </div>
         </div>
-        <div class="fieldrow">
-          <label for="cEmail">Work email</label>
-          <input type="email" id="cEmail" autocomplete="email">
-          <span class="err" id="cEmailErr" hidden>Email addresses look like name@company.com</span>
+        <!-- R4 - specialist state: the price card is replaced by the reason, and
+             the time card states that a specialist confirms the dates. Neither
+             expands, because no figure and no date can be computed here. -->
+        <div id="cSpecStack" hidden>
+          <div class="spec-block" id="cSpecWrap">
+            <h3>A specialist prices this configuration</h3>
+            <p id="cSpecWhy">Quantities above 500 are priced by hand, so this quote comes from a specialist</p>
+          </div>
+          <div class="ecard" style="margin-top:10px"><p class="tspec">A specialist confirms your dates with the quote</p></div>
         </div>
-        <p class="privacy">We use your details for this quote and your order. No marketing lists.</p>
-        <button class="mcta" id="cSubmit" disabled>Get my quote</button>
-        <p class="reason" id="cReason">Add your name and email to generate your quote</p>
+        <div class="mfields">
+          <div class="fieldrow">
+            <label for="cName">Full name</label>
+            <input type="text" id="cName" autocomplete="name">
+            <span class="err" id="cNameErr" hidden>Enter the name for this quote</span>
+          </div>
+          <div class="fieldrow">
+            <label for="cEmail">Work email</label>
+            <input type="email" id="cEmail" autocomplete="email">
+            <span class="err" id="cEmailErr" hidden>Email addresses look like name@company.com</span>
+          </div>
+          <p class="privacy">We use your details for this quote and your order. No marketing lists.</p>
+          <button class="mcta" id="cSubmit" disabled>Get my quote</button>
+          <p class="reason" id="cReason">Add your name and email to generate your quote</p>
+        </div>
       </div>
     </div>
     <div class="modal-body" id="cDone" hidden style="grid-template-columns:minmax(0,1fr)">
@@ -1378,10 +1437,6 @@ function cfgSentence(q){
 /* Ruling (c) - Laser Engraved removes material, so it has no ink colour on any
    surface. One helper feeds every string that names one. */
 function inkValue(q){ return q.method === 'laser' ? 'No ink' : q.colorsLabel; }
-function inkRow(q){
-  if (q.loc === 'No Imprint') return null;
-  return ['Imprint Colors', inkValue(q)];
-}
 function rowsHTML(rows){
   var h = '';
   for (var i=0;i<rows.length;i++){
@@ -1390,32 +1445,41 @@ function rowsHTML(rows){
   }
   return h;
 }
-/* item 2 - the modal reads one fact per row: colour, quantity, then decoration. */
-function modalCfgHTML(q){
-  var rows = [['Color', q.color], ['Quantity', q.qty + ' pieces'], ['Decoration Method', q.methodName]];
-  if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); }
-  else { rows.push(['Location', q.loc]); rows.push(inkRow(q)); }
-  return rowsHTML(rows);
-}
-/* item 8 - the issued quote splits the same facts into what was bought and how
-   it is decorated. Location carries its imprint area, because they are one fact. */
+/* item 8 + R4 - Product facts and Decoration facts are different questions, so
+   both the modal and the issued quote split them into the same two groups. ONE
+   row-builder feeds both surfaces, which is what stops them contradicting each
+   other on colorless methods: laser engraving removes material, so it has no
+   ink row anywhere. The quote adds the imprint area, because its Location line
+   is the one a vendor works from. */
 function colProdHTML(q){ return rowsHTML([['Color', q.color], ['Quantity', q.qty + ' pieces']]); }
-function colDecHTML(q){
+function decRows(q, withArea){
   var rows = [['Method', q.methodName]];
-  if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); return rowsHTML(rows); }
-  rows.push(['Location', q.loc + ' ' + AREA]);
+  if (q.loc === 'No Imprint'){ rows.push(['Location', 'No Imprint']); return rows; }
+  rows.push(['Location', withArea ? q.loc + ' ' + AREA : q.loc]);
   if (q.method !== 'laser') rows.push(['Imprint Colors', q.colorsLabel]);
-  return rowsHTML(rows);
+  return rows;
 }
-/* item 4 - production time and the two arrival bookends, from this product's
-   own Production & Shipping data. */
-function prodBlockHTML(){
-  var c = RATES[CHEAPEST], e = RATES[EARLIEST];
-  return '<h4>Production time</h4>' +
-    '<p>' + PROOF_LINE + '<br>' + PROD_LINE + '</p>' +
-    '<div class="arr"><span class="k">Earliest arrival</span><span class="v">' + e[2] + '<small>' + esc(e[0]) + '</small></span></div>' +
-    '<div class="arr"><span class="k">Cheapest arrival</span><span class="v">' + c[2] + '<small>' + esc(c[0]) + '</small></span></div>' +
-    '<p class="fn">' + DELIV_FN + '</p>';
+function colDecHTML(q){ return rowsHTML(decRows(q, true)); }
+function modalDecHTML(q){ return rowsHTML(decRows(q, false)); }
+/* R4 - the time answer. Collapsed it is one line: one proof day plus five
+   production days is about six business days to the carrier. Expanded, proof
+   and production are a sequence, but the two arrival dates are not the next
+   step in it - they are two prices for the same parcel, so the line ends in a
+   checkmark at Ships and the dates hang off it as a dotted branch. */
+function shipDays(){ return PROD_DAYS + 1; }
+function shipSummary(){ return 'Ready to ship in about ' + shipDays() + ' business days'; }
+function shortDate(d){ return d.replace(/,\s*\d{4}$/, ''); }
+function timelineHTML(){
+  var e = RATES[EARLIEST], c = RATES[CHEAPEST];
+  return '<div class="tl">' +
+    '<div class="node"><span class="k">Free digital proof</span><span class="v">24 hours</span></div>' +
+    '<div class="node"><span class="k">Production</span><span class="v">' + PROD_DAYS + ' business days</span></div>' +
+    '<div class="node done"><span class="k">Ships</span></div>' +
+    '<div class="fork">' +
+      '<div class="br"><span class="k">Earliest in hand</span><span class="v">' + esc(shortDate(e[2])) + '</span></div>' +
+      '<div class="br"><span class="k">Cheapest in hand</span><span class="v">' + esc(shortDate(c[2])) + '</span></div>' +
+    '</div></div>' +
+    '<p class="tlfn">Delivery prices and exact dates depend on your address and are available on your quote.</p>';
 }
 function isSpecialist(){ return !S.priceable; }
 
@@ -1548,30 +1612,55 @@ $('cookieOk').addEventListener('click', function(){ $('cookieBar').style.display
    ============================================================ */
 var openC = false, lastFocus = null;
 function renderModal(){
-  var q = snapshot(S), p = q.p;
+  var q = snapshot(S), p = q.p, spec = isSpecialist();
   $('cThumb').src = THUMB + IDS[0] + '.webp';
-  $('cCfg').innerHTML = modalCfgHTML(q);
-  var showDefault = !S.decSet;
-  $('cDefault').innerHTML = 'This quote prices the default decoration: <b>' + esc(METHODS.laser.name) + ' on Back, no ink</b>. Change it on the product page.';
-  show($('cDefault'), showDefault && !isSpecialist());
-  show($('cPriceWrap'), !isSpecialist());
-  show($('cSpecWrap'), isSpecialist());
+  $('cSubName').textContent = PROD;
+  $('cColProd').innerHTML = colProdHTML(q);
+  $('cColDec').innerHTML = modalDecHTML(q);
+  /* amendment 1 - one sentence that states the meaning, above the rows that
+     carry the values, so it repeats none of them. */
+  $('cDefault').textContent = 'This quote prices the default decoration; pick a different method or location on the product page.';
+  show($('cDefault'), !S.decSet && !spec);
+  show($('cPriceWrap'), !spec);
+  show($('cSpecStack'), spec);
   $('cSpecWhy').textContent = 'Quantities above ' + MAX_TIER + ' are priced by hand, so this quote comes from a specialist';
   $('cSub').textContent = usd(p.total);
   $('cEach').textContent = 'Price each: ' + usd(p.unit);
   $('cBrk').innerHTML = breakdownHTML(q);
-  $('cProd').innerHTML = prodBlockHTML();
+  $('cTimeSum').textContent = shipSummary();
+  $('cTime').innerHTML = timelineHTML();
   var ok = contactValid();
   $('cSubmit').disabled = !ok;
-  $('cSubmit').textContent = isSpecialist() ? 'Request a specialist quote' : 'Get my quote';
+  $('cSubmit').textContent = spec ? 'Request a specialist quote' : 'Get my quote';
   $('cReason').textContent = !ok
     ? 'Add your name and email to generate your quote'
-    : (isSpecialist() ? 'A specialist sends your quote by Thu, Sep 10, 2026' : 'Locked for 30 days, through ' + VALID);
+    : (spec ? 'A specialist sends your quote by Thu, Sep 10, 2026' : 'Locked for 30 days, through ' + VALID);
+}
+/* R4 - one card open at a time. Both open is 904px against a 720px ceiling, and
+   a scroll bar appearing inside a secondary card while the buyer reads a price
+   is worse than a collapse one click undoes. The label swaps with the chevron
+   so the state is legible without colour, and #live says what closed. */
+function setCard(which, open){
+  var isP = which === 'price';
+  show($(isP ? 'cBrk' : 'cTime'), open);
+  $(isP ? 'cBrkT' : 'cTimeT').setAttribute('aria-expanded', open);
+  $(isP ? 'cBrkLabel' : 'cTimeLabel').textContent = isP
+    ? (open ? 'Hide price breakdown' : 'View Price Breakdown')
+    : (open ? 'Hide timeline' : 'View timeline');
+}
+function toggleCard(which){
+  var isP = which === 'price';
+  var opening = $(isP ? 'cBrk' : 'cTime').hasAttribute('hidden');
+  var otherWasOpen = !$(isP ? 'cTime' : 'cBrk').hasAttribute('hidden');
+  setCard('price', isP && opening);
+  setCard('time', !isP && opening);
+  var me = isP ? 'Price breakdown' : 'Timeline', you = isP ? 'timeline' : 'price breakdown';
+  announce(opening ? (me + ' open' + (otherWasOpen ? ', ' + you + ' closed' : '')) : (me + ' closed'));
+  markScrollable();
 }
 function breakdownHTML(q){
   var p = q.p, h = '';
   h += '<div class="r"><span>Base Item Price</span><span>' + q.qty + ' × ' + usd(p.unit) + ' = ' + usd(p.base) + '</span></div>';
-  h += '<div class="r lab"><span>Decoration method: ' + esc(q.methodName) + '</span><span></span></div>';
   if (!p.noImp) h += '<div class="r lab"><span>Imprint 1 — ' + esc(q.loc) + ', ' +
     (q.method === 'laser' ? esc(q.methodName) + ', no ink' : esc(METHODS[q.method].bd) + ' ' + esc(q.methodName)) + '</span><span></span></div>';
   h += '<div class="r"><span>Imprint Method Setup</span><span>Free</span></div>';
@@ -1594,6 +1683,7 @@ function openModal(){
   setChrome();
   show($('cBody'), true); show($('cDone'), false);
   if (S.reissue) prefillIdentity();
+  setCard('price', false); setCard('time', false);
   $('cSubmit').disabled = true;
   setTimeout(markScrollable, 40);
   renderModal();
@@ -1648,10 +1738,8 @@ function prefillIdentity(){
 }
 $('qChangeCfg').addEventListener('click', function(){ reissueFrom('cfg'); });
 $('qChangeDec').addEventListener('click', function(){ reissueFrom('dec'); });
-$('cBrkT').addEventListener('click', function(){
-  var open = $('cBrk').hasAttribute('hidden');
-  show($('cBrk'), open); this.setAttribute('aria-expanded', open);
-});
+$('cBrkT').addEventListener('click', function(){ toggleCard('price'); });
+$('cTimeT').addEventListener('click', function(){ toggleCard('time'); });
 ['cName','cEmail'].forEach(function(id){
   $(id).addEventListener('input', renderModal);
   $(id).addEventListener('blur', function(){
